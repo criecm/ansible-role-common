@@ -1,0 +1,14 @@
+{% for srv in ntp_servers %}
+server {{ srv }} iburst
+{% endfor %}
+{% for pool in ntp_pools %}
+pool {{ pool }}
+{% endfor %}
+
+restrict default limited kod nomodify notrap nopeer noquery
+restrict -6 default limited kod nomodify notrap nopeer noquery
+restrict 127.0.0.1
+restrict -6 ::1
+{% if ntp_leapfile %}
+leapfile "{{ ntp_leapfile }}"
+{% endif %}

@@ -1,0 +1,224 @@
+---
+# taches communes ECM
+
+- include_vars: '{{ includefile }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_os_family }}.yml'
+      skip: True
+  loop_control:
+    loop_var: includefile
+  tags: vars
+
+- include: '{{ includefile }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_os_family }}.yml'
+      skip: True
+  loop_control:
+    loop_var: includefile
+
+- name: resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    mode: '0644'
+  tags: resolver
+  when: not is_jail
+
+# ntp
+- name: config ntpd
+  template:
+    src: '{{ ntp_config }}.j2'
+    dest: '/etc/{{ ntp_config }}'
+    mode: '0644'
+  when: 'ntp_servers or ntp_pools and not is_jail'
+  notify: restart ntpd
+- name: enable ntp
+  service:
+    name: '{{ ntp_service }}'
+    enabled: yes
+    state: started
+  when: 'ntp_servers or ntp_pools and not is_jail'
+- name: Installe CA local
+  copy:
+    src: '{{x509_ca_file}}'
+    dest: '{{x509_ca_path}}'
+    owner: root
+    group: 0
+    mode: '0644'
+  tags: sslecm
+  when: x509_ca_file != ''
+
+- block:
+  - name: Config ldap.conf
+    lineinfile:
+      dest: '{{ldap_etcdir}}/ldap.conf'
+      regexp: '{{ item.regexp }}'
+      line: '{{ item.line }}'
+      state: present
+    with_items:
+      - { regexp: '^BASE', line: 'BASE {{ldap_base}}' }
+      - { regexp: '^URI', line: 'URI {{ldap_uri}}' }
+      - { regexp: '^TLS_REQCERT', line: 'TLS_REQCERT {{ldap_tls_reqcert}}' }
+      - { regexp: '^TLS_CACERT', line: 'TLS_CACERT {{x509_ca_path}}' }
+  - name: chmod 644 ldap.conf
+    file:
+      path: '{{ldap_etcdir}}/ldap.conf'
+      mode: '0644'
+  tags: ldapconf
+
+- block:
+  - name: ssh host keys
+    copy:
+      src: '{{ item }}'
+      dest: '/etc/ssh/{{ item | regex_replace(".*/","") }}'
+      owner: root
+      group: 0
+      mode: '0600'
+    notify: restart sshd
+    with_fileglob:
+      - '{{ playbook_dir }}/files/ssh/{{ inventory_hostname }}/ssh_host*_key'
+  - name: ssh host pub keys
+    copy:
+      src: '{{ item }}'
+      dest: '/etc/ssh/{{ item | regex_replace(".*/","") }}'
+      owner: root
+      group: 0
+      mode: '0644'
+    notify: restart sshd
+    with_fileglob:
+      - '{{ playbook_dir }}/files/ssh/{{ inventory_hostname }}/ssh_host*_key.pub'
+  - name: sshd_config
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: "{{item.regexp}}"
+      line: "{{item.line}}"
+      insertafter: "{{item.insertafter}}"
+      state: present
+      validate: '/usr/sbin/sshd -tf %s'
+    notify: restart sshd
+    with_items: 
+      - '{{ default_sshd_lines }}'
+      - '{{ sshd_lines }}'
+  tags: sshdconf
+
+- block:
+  - name: config ssh root
+    file:
+      path: /root/.ssh
+      state: directory
+      mode: '0700'
+      owner: root
+      group: 0
+  - name: root authorized_keys
+    authorized_key:
+      key: "{{ lookup('file',item) }}"
+      user: root
+      key_options: "environment=\"DSI={{item | regex_replace('^.*/(\\w+)\\.pub','\\1')}}\""
+    with_fileglob:
+      - cles_ssh/*.pub
+  - name: root unauthorized keys
+    authorized_key:
+      key: "{{ lookup('file',item) }}"
+      user: root
+      state: absent
+    with_fileglob:
+      - cles_ssh/*.del
+  tags: rootsshconf
+
+- block:
+  - name: zsh in /etc/shells
+    lineinfile:
+      dest: /etc/shells
+      line: "{{zshpath}}"
+  - name: shell root
+    user:
+      name: root
+      shell: "{{zshpath}}"
+  - name: zshrc
+    template:
+      dest: /root/.zshrc
+      src: '{{ item }}'
+      mode: '0600'
+      owner: root
+    with_first_found:
+      - '{{ playbook_dir }}/templates/zshrc.j2'
+      - '{{ playbook_dir }}/files/zshrc'
+      - zshrc.j2
+  tags: zshroot
+
+- block:
+  - name: git sysutils/common
+    file:
+      path: '{{ gits_root }}'
+      state: directory
+      mode: '0750'
+      owner: root
+      group: 0
+    when: 'gits_root != "/root"'
+  - name: cle ssh depoiement
+    copy:
+      dest: '/root/.ssh/{{ git_ssh_key }}'
+      src: 'files/{{ git_ssh_key }}'
+      owner: root
+      group: 0
+      mode: '0600'
+    when: 'git_ssh_key != ""'
+  - name: repos git gits
+    git:
+      dest: '{{ item.dest | regex_replace("^[^/]",gits_root+"/\1" }}'
+      repo: '{{ item.giturl }}'
+      accept_hostkey: yes
+      key_file: '/root/.ssh/{{ git_ssh_key }}'
+      depth: 2
+      umask: '{{ item.umask | default("0022") }}'
+      version: '{{ item.version | default("master") }}'
+      owner: '{{ item.owner | default("root") }}'
+      group: '{{ item.group | default("0") }}'
+      mode: '{{ item.mode | default("u=rwX,g=rX,o-rwX") }}'
+    with_items: '{{ gits | union(host_gits) }}'
+  tags: gits
+  when: 'gits | union(host_gits) | count() > 0'
+
+- block:
+  - name: old cron daily
+    cron:
+      job: '/usr/local/admin/utils/systeme/cron_daily_serveur.sh'
+      state: absent
+  - name: old cron weekly
+    cron:
+      job: '/usr/local/admin/utils/systeme/cron_weekly_serveur.sh'
+      state: absent
+  - name: old crons daily/weekly /etc/crontab
+    lineinfile:
+      dest: /etc/crontab
+      regexp: '{{ item }}'
+      state: absent
+    with_items:
+      - '/usr/local/admin/utils/systeme/cron_(daily|weekly)_serveur\.sh'
+      - '/usr/local/admin/sysutils/common/cron/(daily|weekly)\.sh'
+      - '^# mises a jour auto du CVS du CRI'
+  - name: cron daily
+    cron:
+      name: cron daily ECM
+      hour: 23
+      minute: 53
+      job: '/usr/local/admin/sysutils/common/cron/daily.sh'
+  - name: cron weekly
+    cron:
+      name: weekly ECM
+      hour: 23
+      minute: 32
+      job: '/usr/local/admin/sysutils/common/cron/weekly.sh'
+  tags: cronecm
+
+- name: alias mail root
+  lineinfile:
+    dest: "{{mailaliases}}"
+    line: "root: {{rootmailto}}"
+    regexp: '^root:'
+  notify: newaliases
+  when: rootmailto != ''
+  tags: mailclient

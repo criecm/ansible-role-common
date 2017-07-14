@@ -1,0 +1,2 @@
+auth,authpriv.*                 @{{ syslog_auth_server | default(syslog_server) }}
+mail.info                       @{{ syslog_server }}

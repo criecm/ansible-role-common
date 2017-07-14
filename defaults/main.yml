@@ -1,0 +1,119 @@
+---
+# vars to define elsewhere (group_vars/, host_vars/, inventory, …) see 
+# http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence
+#
+# basedn LDAP
+ldap_base: 'dc=univ,dc=fr'
+# URI LDAP
+ldap_uri: 'ldaps://ldapr.univ.fr/ ldaps://ldap.univ.fr/'
+# openldap config directory
+ldap_etcdir: /etc/ldap
+
+# zsh path
+zshpath: /bin/zsh
+
+# etcprefix (/usr/local or not)
+etcprefix: ''
+
+# ntp
+ntp_service: ntp
+
+# config ntp
+ntp_config: ntp.conf
+
+# serveurs ntp
+ntp_servers: []
+
+ntp_pools: []
+
+ntp_listen_addrs: []
+
+ntp_leapfile:
+
+# mailrelays selected by network
+# ex: - { network: 10.0.0.0/24, relay: smtp.internal }
+#     - { network: 192.168.0.0/24, relay: smtp.special }
+#     - { network: 0.0.0.0/0, relay: smtp.default }
+mailrelays: []
+
+# mail relay to configure (force over mailrelays)
+host_mailrelay: ''
+
+# is mail relay ? (host var)
+is_mailrelay: False
+
+# mail aliases file
+mailaliases: /etc/aliases
+
+# redirect mail for root to...
+rootmailto: 
+
+# x509 CA certificate
+x509_ca_file:
+
+# ans its place on filesystem
+x509_ca_path: /etc/ssl/ca.crt
+
+# value for TLS_REQCERT in ldap.conf (and others)
+ldap_tls_reqcert: never
+
+# host is a resolver
+is_resolver: False
+
+# specific FreeBSD repo
+pkg_repo_conf: pkgecm.conf
+
+# nameserver
+#  network: restrict host ip ('0.0.0.0/0'=all)
+#  ip: nameserver
+resolvers:
+  - { network: '0.0.0.0/0', ip: "8.8.8.8" }
+#  - { network: '^10\.3\.0\.', ip: "10.3.0.52" }
+#  - { network: '^2001:660:5404:', ip: "2001:660:5404:b0b::53" }
+#  - { network: '^10\.3\.0\.', ip: "147.94.19.254" }
+
+# search domains for resolv.conf
+#search_domains:
+#  - { network: '2001::/8', domain: 'ipv6.univ.fr' }
+#  - { network: '192.168.1.0/24', domain: 'home' }
+#  - { network: '0.0.0.0/0', domain: 'default.domain' }
+
+host_timezone: 'Europe/Paris'
+
+# default prefix for commands
+prefix: /usr
+
+# for jails ONLY
+is_jail: False
+
+# syslog server to send syslogs
+syslog_server: ''
+
+# syslog server for auth
+syslog_auth_server: '{{ syslog_server }}'
+
+# for syslog SERVER
+is_syslogd: False
+
+# default sshd lines
+#ex:  - { line: 'PermitUserEnvironment yes', regexp: '^PermitUserEnvironment', insertafter: '^#[[:space:]]*PermitUserEnvironment' }
+default_sshd_lines: []
+
+# host specific lines
+sshd_lines: []
+
+# host specific pkgs 
+pkgs: []
+
+# path prefix for relative gits[path]'s
+gits_root: /root
+
+# gits: git repos to deploy in /usr/local/admin/sysutils
+gits: []
+
+# idem, added to gits at runtime (for use in host vars or ...)
+host__gits: []
+
+# ssh key for above git repos (fiole name in files/, copied to /root/.ssh/)
+git_ssh_key:
+

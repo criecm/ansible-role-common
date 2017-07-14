@@ -1,0 +1,59 @@
+---
+- name: client openldap OpenBSD
+  openbsd_pkg:
+    name: '{{item}}'
+    state: present
+  environment:
+    PKG_PATH: "http://ftp.fr.openbsd.org/pub/OpenBSD/{{ansible_distribution_release}}/packages/{{ansible_architecture}}/"
+  with_items:
+    - openldap-client
+    - git
+    - munin-node
+    - rsync
+    - vim--no_x11
+    - mtr--
+    - zsh
+    - '{{ pkgs }}'
+  tags: baseconf, pkg
+
+# config ldap globale
+- name: openldap config dir
+  file: path='{{ldap_etcdir}}' state=directory owner=0 group=0 mode=0755
+  tags: ldapconf
+
+# mailrelay
+- name: mailrelay
+  lineinfile:
+    dest: /etc/mail/smtpd.conf
+    line: 'accept from local for any relay via {{mailrelay}}'
+    regexp: '^accept .*for any relay'
+  notify: restart smtpd
+  when: mailrelay != '' and not is_mailrelay
+  tags: mailclient
+
+# timezone
+- name: timezone
+  file:
+    src: '/usr/share/zoneinfo/{{ host_timezone }}'
+    dest: '/etc/localtime'
+    state: link
+    force: yes
+  tags: timezone
+
+- block:
+  - name: syslog central
+    lineinfile:
+      dest: /etc/syslog.conf
+      insertbefore: '^!'
+      regexp: '^[^#]+@.*'
+      line: '*.notice;cron,ftp,kern,lpr,mail,user.none	@{{ syslog_server }}'
+    notify: restart BSD syslogd
+  - name: syslog central / auth
+    lineinfile:
+      dest: /etc/syslog.conf
+      insertbefore: '^!'
+      regexp: '^auth.*@.*'
+      line: 'auth.info;authpriv.info					@{{ syslog_auth_server | default(syslog_server) }}'
+    notify: restart BSD syslogd
+  when: syslog_server != '' and not is_syslogd
+  tags: syslog

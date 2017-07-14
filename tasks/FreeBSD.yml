@@ -1,0 +1,178 @@
+---
+# get jail status
+- name: get jail status
+  command: 'sysctl -n security.jail.jailed'
+  failed_when: False
+  check_mode: False
+  changed_when: False
+  register: jail_status
+
+- name: register is_jail
+  set_fact:
+    is_jail: True
+  when: 'jail_status.rc == 0 and jail_status.stdout == "1"'
+
+# packages ecm
+- block:
+  - name: mkdir pkgrepo
+    file:
+      path: /usr/local/etc/pkg/repos
+      state: directory
+      mode: '0755'
+  
+  - name: pkg repo ecm
+    copy:
+      src: '{{ pkg_repo_conf }}'
+      dest: '/usr/local/etc/pkg/repos/{{ pkg_repo_conf | regex_replace(".*/", "") }}'
+      validate: 'pkg -vv -C %s'
+      mode: '0644'
+  when: pkg_repo_conf != ''
+  tags: baseconf, pkg
+
+# packages standard
+- name: pkgs standard
+  pkgng:
+    name: '{{item}}'
+    state: present
+  with_items:
+    - git
+    - rsync
+    - tmux
+    - vim-lite
+    - zsh
+    - openldap-sasl-client
+    - '{{ pkgs }}'
+  tags: baseconf, pkg
+
+- name: pkgs pkg machine physique
+  pkgng:
+    name: '{{item}}'
+    state: present
+  with_items:
+    - bsnmp-ucd
+    - dmidecode
+    - ipmitool
+    - munin-node
+    - smartmontools
+  when: not is_jail
+  tags: baseconf, pkg
+
+# mail via relay
+- name: mailrelay
+  lineinfile:
+    dest: /etc/mail/freebsd.submit.mc
+    line: "FEATURE(`msp', `[{{mailrelay}}]')"
+    regexp: '^FEATURE\(.?msp'
+  register: domailrelay
+  when: mailrelay != '' and not is_mailrelay
+  tags: baseconf, mailclient
+
+- block:
+  - name: stop sendmail
+    service:
+      name: sendmail
+      state: stopped
+
+  - name: config relay sendmail
+    command: /usr/bin/make install-submit-cf
+    args:
+      chdir: /etc/mail
+
+  - name: no sendmail_submit
+    lineinfile:
+      dest: /etc/rc.conf
+      line: 'sendmail_submit_enable="NO"'
+      regexp: '^sendmail_submit_enable='
+
+  when: domailrelay.changed == True
+  tags: baseconf mailclient
+
+# timezone
+- block:
+  - name: get timezone
+    command: cat /var/db/zoneinfo
+    register: zoneinfo
+    changed_when: False
+    ignore_errors: True
+    check_mode: False
+  - name: set timezone
+    command: 'tzsetup {{ host_timezone }}'
+    when: zoneinfo.stdout != host_timezone
+  tags: baseconf, timezone
+
+# syslog
+- block:
+  - name: syslog central
+    lineinfile:
+      dest: /etc/syslog.conf
+      line: '*.*			@{{ syslog_server }}'
+      regexp: '^\*.\*\s+@.*'
+      insertafter: '^#\*\.\*'
+    notify: restart BSD syslogd
+  - name: syslog centrale auth
+    lineinfile:
+      dest: /etc/syslog.conf
+      line: 'auth.info;authpriv.info			@{{ syslog_auth_server }}'
+      regexp: '^auth.*@.*'
+      insertafter: '^\*.\*\s+@.*'
+    notify: restart BSD syslogd
+  - name: get rc flags
+    command: 'sysrc -n syslogd_flags'
+    register: sysrc_syslogd_flags
+    changed_when: False
+    check_mode: False
+  - name: set syslogd_flags
+    command: 'sysrc syslogd_flags="-c -s"'
+    when: sysrc_syslogd_flags.stdout != "-c -s"
+  when: syslog_server != '' and not is_syslogd
+  tags: baseconf, syslog
+
+# hardening freebsd
+- block:
+  - name: rc.conf
+    lineinfile:
+      dest: /etc/rc.conf
+      regexp: '{{item.regexp}}'
+      line: '{{item.line}}'
+    with_items:
+      - { regexp: '^clear_tmp_enable=', line: 'clear_tmp_enable="YES"' }
+  - name:
+    lineinfile:
+      dest: /etc/sysctl.conf
+      regexp: '{{item.regexp}}'
+      line: '{{item.line}}'
+    with_items:
+      - { regexp: '^security.bsd.see_other_uids=', line: 'security.bsd.see_other_uids=0' }
+    when: 'freebsd_allow_see_other | default(False)'
+  tags: baseconf, security
+
+# snmp
+- name: config snmpd
+  lineinfile:
+    line: '{{ item.line }}'
+    regexp: '{{ item.regexp }}'
+    dest: /etc/snmpd.config
+  with_items:
+    - { line: 'begemotSnmpdModulePath."ucd" = "/usr/local/lib/snmp_ucd.so"', regexp: '^begemotSnmpdModulePath.*snmp_ucd' }
+#    - { line: 'begemotSnmpdModulePath."hostres" = "/usr/lib/snmp_hostres.so"', regexp: '^begemotSnmpdModulePath.*snmp_hostres' }
+  notify: restart bsnmpd
+  when: not is_jail
+  tags: baseconf, snmpd
+
+# ntp leapfile
+- name: leapfile
+  lineinfile:
+    line: 'daily_ntpd_leapfile_enable="NO"'
+    regexp: '^daily_ntpd_leapfile_enable='
+    insertafter: 'daily_ntpd_leapfile_enable'
+    dest: /etc/periodic.conf
+    create: True
+  tags: baseconf, ntpd
+
+- name: enable bsnmpd
+  service:
+    name: bsnmpd
+    state: started
+    enabled: yes
+  when: not is_jail
+  tags: baseconf, snmpd
