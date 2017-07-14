@@ -150,7 +150,7 @@
   tags: zshroot
 
 - block:
-  - name: git sysutils/common
+  - name: gits
     file:
       path: '{{ gits_root }}'
       state: directory
@@ -168,51 +168,24 @@
     when: 'git_ssh_key != ""'
   - name: repos git gits
     git:
-      dest: '{{ item.dest | regex_replace("^[^/]",gits_root+"/\1" }}'
-      repo: '{{ item.giturl }}'
+      dest: '{{ item.dest }}'
+      repo: '{{ item.repo }}'
       accept_hostkey: yes
       key_file: '/root/.ssh/{{ git_ssh_key }}'
       depth: 2
       umask: '{{ item.umask | default("0022") }}'
       version: '{{ item.version | default("master") }}'
-      owner: '{{ item.owner | default("root") }}'
-      group: '{{ item.group | default("0") }}'
-      mode: '{{ item.mode | default("u=rwX,g=rX,o-rwX") }}'
     with_items: '{{ gits | union(host_gits) }}'
   tags: gits
   when: 'gits | union(host_gits) | count() > 0'
 
-- block:
-  - name: old cron daily
-    cron:
-      job: '/usr/local/admin/utils/systeme/cron_daily_serveur.sh'
-      state: absent
-  - name: old cron weekly
-    cron:
-      job: '/usr/local/admin/utils/systeme/cron_weekly_serveur.sh'
-      state: absent
-  - name: old crons daily/weekly /etc/crontab
-    lineinfile:
-      dest: /etc/crontab
-      regexp: '{{ item }}'
-      state: absent
-    with_items:
-      - '/usr/local/admin/utils/systeme/cron_(daily|weekly)_serveur\.sh'
-      - '/usr/local/admin/sysutils/common/cron/(daily|weekly)\.sh'
-      - '^# mises a jour auto du CVS du CRI'
-  - name: cron daily
-    cron:
-      name: cron daily ECM
-      hour: 23
-      minute: 53
-      job: '/usr/local/admin/sysutils/common/cron/daily.sh'
-  - name: cron weekly
-    cron:
-      name: weekly ECM
-      hour: 23
-      minute: 32
-      job: '/usr/local/admin/sysutils/common/cron/weekly.sh'
-  tags: cronecm
+- name: crons
+  cron: '{{ cron }}'
+  with_items: '{{ crons }}'
+  loop_control:
+    loop_var: cron
+  tags: crons
+  when: crons | count > 0
 
 - name: alias mail root
   lineinfile:

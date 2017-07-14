@@ -48,9 +48,6 @@
       * `umask` ('0022')
       * `update` (False)
       * `version` (master)
-      * `owner` (root)
-      * `group` (0)
-      * `mode` (u=rwX,g=rX,o=rX)
 
 ### FreeBSD specific
 

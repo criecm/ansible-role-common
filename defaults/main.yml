@@ -112,7 +112,7 @@ gits_root: /root
 gits: []
 
 # idem, added to gits at runtime (for use in host vars or ...)
-host__gits: []
+host_gits: []
 
 # ssh key for above git repos (fiole name in files/, copied to /root/.ssh/)
 git_ssh_key:
