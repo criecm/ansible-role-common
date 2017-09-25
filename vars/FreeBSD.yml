@@ -5,3 +5,4 @@ zshpath: /usr/local/bin/zsh
 mailaliases: /etc/mail/aliases
 prefix: /usr/local
 ntp_service: ntpd
+ntp_leapfile: /var/db/ntpd.leap-seconds.list
