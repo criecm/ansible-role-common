@@ -86,6 +86,9 @@ prefix: /usr
 # for jails ONLY
 is_jail: False
 
+# for kvm/...
+is_vm: False
+
 # syslog server to send syslogs
 syslog_server: ''
 
@@ -117,3 +120,6 @@ host_gits: []
 # ssh key for above git repos (fiole name in files/, copied to /root/.ssh/)
 git_ssh_key:
 
+# serveur ocsinventory
+ocsinventory_server:
+ocsinventory_tag:

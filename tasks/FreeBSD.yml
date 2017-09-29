@@ -10,7 +10,19 @@
 - name: register is_jail
   set_fact:
     is_jail: True
-  when: 'jail_status.rc == 0 and jail_status.stdout == "1"'
+  when: jail_status.rc == 0 and jail_status.stdout == "1"
+
+- name: get vm guest status
+  command: 'sysctl -n kern.vm_guest'
+  failed_when: False
+  check_mode: False
+  changed_when: False
+  register: vm_status
+
+- name: register is_vm
+  set_fact:
+    is_vm: True
+  when: vm_status.rc == 0 and vm_status.stdout != "none"
 
 # packages ecm
 - block:
@@ -42,6 +54,8 @@
     - zsh
     - openldap-sasl-client
     - '{{ pkgs }}'
+    - '{{ role_pkgs }}'
+    - '{{ host_pkgs }}'
   tags: baseconf, pkg
 
 - name: pkgs pkg machine physique
@@ -54,7 +68,7 @@
     - ipmitool
     - munin-node
     - smartmontools
-  when: not is_jail
+  when: not is_jail and not is_vm
   tags: baseconf, pkg
 
 # mail via relay
@@ -146,6 +160,30 @@
     when: 'freebsd_allow_see_other | default(False)'
   tags: baseconf, security
 
+# ocsinventory
+- block:
+  - name: install ocsinventory-agent
+    pkgng:
+      name: Ocsinventory-Unix-Agent
+      state: present
+  - file:
+      dest: /usr/local/etc/ocsinventory
+      state: directory
+  - name: config
+    copy:
+      dest: /usr/local/etc/ocsinventory/ocsinventory-agent.cfg
+      content: |
+        server={{ ocsinventory_server }}
+        ca=/usr/local/etc/ssl/cert.pem
+        basevardir=/var/db/ocsinventory-agent
+        {% if ocsinventory_tag %}tag={{ ocsinventory_tag }}{% endif %}
+  - name: run ocsinventory-agent
+    command: '/usr/local/bin/ocsinventory-agent'
+    failed_when: False
+    changed_when: False
+  tags: ocsinventory
+  when: ocsinventory_server != "" and not is_jail and not is_vm
+
 # snmp
 - name: config snmpd
   lineinfile:
@@ -156,7 +194,7 @@
     - { line: 'begemotSnmpdModulePath."ucd" = "/usr/local/lib/snmp_ucd.so"', regexp: '^begemotSnmpdModulePath.*snmp_ucd' }
 #    - { line: 'begemotSnmpdModulePath."hostres" = "/usr/lib/snmp_hostres.so"', regexp: '^begemotSnmpdModulePath.*snmp_hostres' }
   notify: restart bsnmpd
-  when: not is_jail
+  when: not is_jail and not is_vm
   tags: baseconf, snmpd
 
 # ntp leapfile
@@ -174,5 +212,5 @@
     name: bsnmpd
     state: started
     enabled: yes
-  when: not is_jail
+  when: not is_jail and not is_vm
   tags: baseconf, snmpd

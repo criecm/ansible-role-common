@@ -1,4 +1,16 @@
 ---
+- name: get vm guest status
+  shell: 'dmesg | egrep "(on KVM|Virtual HD|VMware|Xen virtual console)"'
+  failed_when: False
+  check_mode: False
+  changed_when: False
+  register: vm_status
+
+- name: register is_vm
+  set_fact:
+    is_vm: True
+  when: vm_status.rc == 0
+
 - name: installe debconf-utils
   apt:
     name: debconf-utils
@@ -23,9 +35,44 @@
     name: '{{ item }}'
     state: present
   with_items:
+    - zsh
     - ldap-utils
+    - git
+    - ntp
     - '{{ pkgs }}'
+    - '{{ role_pkgs }}'
+    - '{{ host_pkgs }}'
   tags: pkg
+
+# ocsinventory
+- block:
+  - name: config ocsinventory/debconf
+    debconf:
+      name: ocsinventory-agent
+      question: '{{ item.q }}'
+      vtype: '{{ item.t }}'
+      value: '{{ item.v }}'
+    with_items:
+      - { q: 'ocsinventory-agent/tag', t: 'string', v: '{{ ocsinventory_tag }}' }
+      - { q: 'ocsinventory-agent/method', t: 'select', v: 'https' }
+      - { q: 'ocsinventory-agent/server', t: 'string', v: '{{ ocsinventory_server }}' }
+  - name: install ocsinventory-agent
+    apt:
+      name: ocsinventory-agent
+      state: present
+  - name: config
+    copy:
+      dest: /etc/ocsinventory/ocsinventory-agent.cfg
+      content: |
+        server={{ ocsinventory_server }}
+        basevardir=/var/db/ocsinventory-agent
+        {% if ocsinventory_tag %}tag={{ ocsinventory_tag }}{% endif %}
+  - name: run ocsinventory-agent
+    command: '/usr/bin/ocsinventory-agent'
+    failed_when: False
+    changed_when: False
+  tags: ocsinventory
+  when: ocsinventory_server != "" and not is_vm
 
 # mailrelay
 - block:

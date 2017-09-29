@@ -168,7 +168,7 @@
     when: 'git_ssh_key != ""'
   - name: repos git gits
     git:
-      dest: '{{ item.dest }}'
+      dest: '{{ gits_root }}/{{ item.dest }}'
       repo: '{{ item.repo }}'
       accept_hostkey: yes
       key_file: '/root/.ssh/{{ git_ssh_key }}'
