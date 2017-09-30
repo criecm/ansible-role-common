@@ -13,8 +13,7 @@ galaxy_info:
   platforms:
     - name: FreeBSD
       versions:
-        - 11
-        - 11
+        - 11.0
         - 10.3
     - name: OpenBSD
       versions:
@@ -25,12 +24,12 @@ galaxy_info:
         - stretch
 
   galaxy_tags:
-    - mailrelay_client
+    - mailviarelay
     - syslog
-    - ldap_client
-    - ntp_client
+    - ntp
     - packages
     - sshd
+    - authorizedkeys
 
 dependencies: []
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
