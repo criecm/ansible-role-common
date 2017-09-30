@@ -13,8 +13,8 @@ galaxy_info:
   platforms:
     - name: FreeBSD
       versions:
-        - 11.1
-        - 11.0
+        - 11
+        - 11
         - 10.3
     - name: OpenBSD
       versions:
