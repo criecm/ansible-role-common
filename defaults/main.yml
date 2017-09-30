@@ -108,6 +108,12 @@ sshd_lines: []
 # host specific pkgs 
 pkgs: []
 
+# same for use in sub-roles
+role_pkgs: []
+
+# same for inventory
+host_pkgs: []
+
 # path prefix for relative gits[path]'s
 gits_root: /root
 
