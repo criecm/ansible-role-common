@@ -52,6 +52,7 @@
     - tmux
     - vim-lite
     - zsh
+    - munin-node
     - openldap-sasl-client
     - '{{ pkgs }}'
     - '{{ role_pkgs }}'
@@ -66,7 +67,6 @@
     - bsnmp-ucd
     - dmidecode
     - ipmitool
-    - munin-node
     - smartmontools
   when: not is_jail and not is_vm
   tags: baseconf, pkg

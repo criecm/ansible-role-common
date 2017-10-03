@@ -10,26 +10,34 @@
     is_vm: True
   when: vm_status.rc == 0
 
-- name: client openldap OpenBSD
+- name: pkgs OpenBSD
   openbsd_pkg:
     name: '{{item}}'
     state: present
   environment:
     PKG_PATH: "http://ftp.fr.openbsd.org/pub/OpenBSD/{{ansible_distribution_release}}/packages/{{ansible_architecture}}/"
   with_items:
-    - openldap-client
     - git
-    - munin-node
     - rsync
     - vim--no_x11
     - mtr--
     - zsh
+    - openldap-client
+    - munin-node
+    - '{{ host_pkgs }}'
+    - '{{ role_pkgs }}'
     - '{{ pkgs }}'
   tags: baseconf, pkg
 
 # config ldap globale
 - name: openldap config dir
-  file: path='{{ldap_etcdir}}' state=directory owner=0 group=0 mode=0755
+  file:
+    path: '{{ldap_etcdir}}'
+    state: directory
+    owner: 0
+    group: 0
+    mode: '0755'
+  when: ldap_base != ""
   tags: ldapconf
 
 # mailrelay

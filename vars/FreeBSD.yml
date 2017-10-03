@@ -6,3 +6,4 @@ mailaliases: /etc/mail/aliases
 prefix: /usr/local
 ntp_service: ntpd
 ntp_leapfile: /var/db/ntpd.leap-seconds.list
+munin_etcdir: /usr/local/etc/munin

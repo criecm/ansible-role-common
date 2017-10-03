@@ -36,9 +36,10 @@
     state: present
   with_items:
     - zsh
-    - ldap-utils
     - git
     - ntp
+    - ldap-utils
+    - munin-node
     - '{{ pkgs }}'
     - '{{ role_pkgs }}'
     - '{{ host_pkgs }}'

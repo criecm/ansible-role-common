@@ -40,7 +40,7 @@
     mail to forward root's mail
   * `gits_root` ('/root')
     path for relative path in `gits`
-  * `gits` and `host_gits` ([])
+  * `gits`, `host_gits` and `role_gits` ([])
     lists of dicts: each MUST have at least
       * `repo`: git url to clone there
       * `dest`: destination path (absolute or relative to gits_root)
@@ -48,6 +48,10 @@
       * `umask` ('0022')
       * `update` (False)
       * `version` (master)
+  * `munin_servers` ([])
+    Ip's of munin master node(s). Will trigger munin-node install
+  * `ocsinventory_server` ('')
+    If present, install and configure openinventory-agent
 
 ### FreeBSD specific
 
@@ -82,7 +86,7 @@
     If defined, name/IP of the mail relay
 
 ### LDAP basic config
-  * `ldap_base` (dc=univ,dc=fr)
+  * `ldap_base` ('')
     baseDN ldap (for ldap.conf)
   * `ldap_uri` ('ldaps://ldapr.univ.fr/ ldaps://ldap.univ.fr/')
     URI for ldap.conf

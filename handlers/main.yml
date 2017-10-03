@@ -35,3 +35,8 @@
   service:
     name: '{{ ntp_service }}'
     state: restarted
+
+- name: restart munin
+  service:
+    name: '{{ munin_service }}'
+    state: restarted

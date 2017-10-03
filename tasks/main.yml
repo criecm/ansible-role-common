@@ -33,14 +33,14 @@
     src: '{{ ntp_config }}.j2'
     dest: '/etc/{{ ntp_config }}'
     mode: '0644'
-  when: 'ntp_servers or ntp_pools and not is_jail'
+  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm'
   notify: restart ntpd
 - name: enable ntp
   service:
     name: '{{ ntp_service }}'
     enabled: yes
     state: started
-  when: 'ntp_servers or ntp_pools and not is_jail'
+  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm'
 - name: Installe CA local
   copy:
     src: '{{x509_ca_file}}'
@@ -51,6 +51,30 @@
   tags: sslecm
   when: x509_ca_file != ''
 
+# munin config
+- block:
+  - name: munin allow servers
+    lineinfile:
+      path: '{{ munin_etcdir }}/munin-node.conf'
+      line: 'allow ^{{ munin_server }}'
+      regexp: '^allow.*{{ munin_server }}'
+      insertafter: 'allow '
+    notify: restart munin
+    with_items: '{{ munin_servers }}'
+    loop_control:
+      loop_var: munin_server
+  - name: enable plugins
+    shell: 'munin-node-configure --shell | fgrep -v plugins/if_ | fgrep -v plugins/sendmail_ | sh'
+    args:
+      creates: '{{ munin_etcdir }}/plugins/load'
+  - name: enable service
+    service:
+      name: '{{ munin_service }}'
+      state: started
+      enabled: yes
+  when: munin_servers | count() > 0
+
+# ldap
 - block:
   - name: Config ldap.conf
     lineinfile:
@@ -68,7 +92,9 @@
       path: '{{ldap_etcdir}}/ldap.conf'
       mode: '0644'
   tags: ldapconf
+  when: ldap_base != "" and ldap_uri != "" and x509_ca_path != ""
 
+# ssh host keys
 - block:
   - name: ssh host keys
     copy:
@@ -104,6 +130,7 @@
       - '{{ sshd_lines }}'
   tags: sshdconf
 
+# root ssh access and authorized_keys
 - block:
   - name: config ssh root
     file:
@@ -128,6 +155,7 @@
       - cles_ssh/*.del
   tags: rootsshconf
 
+# root zsh config
 - block:
   - name: zsh in /etc/shells
     lineinfile:
@@ -149,6 +177,7 @@
       - zshrc.j2
   tags: zshroot
 
+# git repos
 - block:
   - name: gits
     file:
@@ -175,9 +204,12 @@
       depth: 2
       umask: '{{ item.umask | default("0022") }}'
       version: '{{ item.version | default("master") }}'
-    with_items: '{{ gits | union(host_gits) }}'
+    with_items: 
+      - '{{ gits }}'
+      - '{{ host_gits }}'
+      - '{{ role_gits }}'
   tags: gits
-  when: 'gits | union(host_gits) | count() > 0'
+  when: 'gits | union(host_gits) | union(role_gits) | count() > 0'
 
 - name: crons
   cron: '{{ cron }}'

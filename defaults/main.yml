@@ -3,7 +3,7 @@
 # http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence
 #
 # basedn LDAP
-ldap_base: 'dc=univ,dc=fr'
+ldap_base:
 # URI LDAP
 ldap_uri: 'ldaps://ldapr.univ.fr/ ldaps://ldap.univ.fr/'
 # openldap config directory
@@ -123,9 +123,16 @@ gits: []
 # idem, added to gits at runtime (for use in host vars or ...)
 host_gits: []
 
+# idem, for use in roles
+role_gits: []
+
 # ssh key for above git repos (fiole name in files/, copied to /root/.ssh/)
 git_ssh_key:
 
 # serveur ocsinventory
 ocsinventory_server:
 ocsinventory_tag:
+
+# munin
+munin_servers: []
+munin_service: munin-node
