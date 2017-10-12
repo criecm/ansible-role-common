@@ -136,3 +136,6 @@ ocsinventory_tag:
 # munin
 munin_servers: []
 munin_service: munin-node
+
+# NUT
+nut_monitor:

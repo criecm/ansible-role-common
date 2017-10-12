@@ -110,3 +110,32 @@
   when: syslog_server != '' and not is_syslogd
   tags: syslog
   notify: restart Debian rsyslog
+
+# UPS
+- block:
+  - name: NUT
+    apt:
+      name: nut-client
+      state: present
+    tags: pkg, ups
+  - name: nut.conf
+    copy:
+      content: |
+        MODE=netclient
+      dest: /etc/nut/nut.conf
+    tags: conf, ups
+  - name: upsmon.conf
+    template:
+      src: upsmon.conf.j2
+      dest: /etc/nut/upsmon.conf
+      mode: '0640'
+      group: nut
+    tags: conf, ups
+  - name: activate
+    service:
+      name: nut-client
+      state: started
+      enabled: True
+    tags: ups
+  when: nut_monitor != "" and not is_vm
+  

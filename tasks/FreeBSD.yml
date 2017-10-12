@@ -214,3 +214,30 @@
     enabled: yes
   when: not is_jail and not is_vm
   tags: baseconf, snmpd
+
+# NUT
+- block:
+  - name: install NUT
+    pkgng:
+      name: nut
+      state: present
+    tags: pkg, ups
+  - name: nut.conf
+    copy:
+      content: |
+        MODE=netclient
+      dest: /usr/local/etc/nut/nut.conf
+    tags: conf, ups
+  - name: upsmon.conf
+    template:
+      src: upsmon.conf.j2
+      dest: /usr/local/etc/nut/upsmon.conf
+      mode: '0640'
+    tags: conf, ups
+  - name: service upsmon
+    service:
+      name: nut_upsmon
+      state: started
+      enabled: True
+    tags: ups
+  when: nut_monitor != "" and not is_vm

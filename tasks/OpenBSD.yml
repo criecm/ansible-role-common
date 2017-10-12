@@ -78,6 +78,10 @@
   tags: syslog
 
 # ocsinventory
+- name: check
+  stat: /usr/local/bin/ocsinventory-agent
+  register: ocsinstalled
+
 - block:
   - name: dependencies
     openbsd_pkg:
@@ -85,12 +89,13 @@
       state: present
     with_items:
       - nmap
-      - dmidecode
+#      - dmidecode
       - pciutils
       - p5-libwww
       - p5-XML-Simple
       - p5-Net-IP
       - p5-Proc-Daemon
+      - p5-LWP-Protocol-https
   - name: get
     get_url:
       url: 'https://github.com/OCSInventory-NG/UnixAgent/releases/download/2.3/Ocsinventory-Unix-Agent-2.3.tar.gz'
@@ -105,6 +110,10 @@
     args:
       chdir: /root/Ocsinventory-Unix-Agent-2.3
       creates: /usr/local/bin/ocsinventory-agent
+  when: not ocsinstalled.stat.exists and ocsinventory_server != "" and not is_vm
+
+# config ocs
+block:
   - name: mkdir
     file:
       dest: /etc/ocsinventory
@@ -120,3 +129,31 @@
     shell: '/usr/local/bin/ocsinventory-agent'
     changed_when: False
   when: ocsinventory_server != "" and not is_vm
+
+# NUT
+- block:
+  - name: install NUT
+    openbsd_pkg:
+      name: nut
+      state: present
+    tags: pkg,ups
+  - name: nut.conf
+    copy:
+      content: |
+        MODE=netclient
+      dest: /etc/nut/nut.conf
+    tags: conf,ups
+  - name: upsmon.conf
+    template:
+      src: upsmon.conf.j2
+      dest: /etc/nut/upsmon.conf
+      mode: '0640'
+      group: _ups
+    tags: conf,ups
+  - name: service upsmon
+    service:
+      name: nut_upsmon
+      state: started
+      enabled: True
+    tags: ups
+  when: nut_monitor != "" and not is_vm
