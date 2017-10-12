@@ -225,7 +225,7 @@
   - name: nut.conf
     copy:
       content: |
-        MODE=netclient
+        MODE={{ nut_mode }}
       dest: /usr/local/etc/nut/nut.conf
     tags: conf, ups
   - name: upsmon.conf

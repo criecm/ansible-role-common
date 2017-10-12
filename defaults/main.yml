@@ -139,3 +139,4 @@ munin_service: munin-node
 
 # NUT
 nut_monitor:
+nut_mode: netclient
