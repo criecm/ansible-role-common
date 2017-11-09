@@ -55,7 +55,7 @@
 - block:
   - name: munin allow servers
     lineinfile:
-      path: '{{ munin_etcdir }}/munin-node.conf'
+      dest: '{{ munin_etcdir }}/munin-node.conf'
       line: 'allow ^{{ munin_server }}'
       regexp: '^allow.*{{ munin_server }}'
       insertafter: 'allow '
@@ -72,6 +72,21 @@
       name: '{{ munin_service }}'
       state: started
       enabled: yes
+  - name: get ip for munin
+    shell: "host {{ ansible_hostname }} | awk '{ print $NF }'"
+    register: munin_node_address
+    delegate_to: '{{ munin_servers[0] }}'
+  - name: add config in munin server
+    copy:
+      dest: '/usr/local/etc/munin/munin-conf.d/{{ inventory_hostname }}.conf'
+      content: |
+        [{{ ansible_fqdn }}]
+        address {{ munin_node_address.stdout }}
+    delegate_to: '{{munin_server}}'
+    with_items:
+      - '{{ munin_servers }}'
+    loop_control:
+      loop_var: munin_server
   when: munin_servers | count() > 0
 
 # ldap

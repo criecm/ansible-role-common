@@ -1,5 +1,6 @@
 ---
-- name: is vm ?
+
+- name: check vm
   shell: 'sysctl -n hw.vendor | grep -q "QEMU"'
   register: vm_status
   changed_when: False
@@ -79,7 +80,8 @@
 
 # ocsinventory
 - name: check
-  stat: /usr/local/bin/ocsinventory-agent
+  stat:
+    path: /usr/local/bin/ocsinventory-agent
   register: ocsinstalled
 
 - block:
@@ -113,7 +115,7 @@
   when: not ocsinstalled.stat.exists and ocsinventory_server != "" and not is_vm
 
 # config ocs
-block:
+- block:
   - name: mkdir
     file:
       dest: /etc/ocsinventory
@@ -123,8 +125,10 @@ block:
       dest: /etc/ocsinventory/ocsinventory-agent.cfg
       content: |
         server={{ ocsinventory_server }}
-        {% if ocsinventory_tag %}tag={{ ocsinventory_tag }}{%endif %}
+        {% if ocsinventory_tag %}tag={{ ocsinventory_tag }}
+        {%endif %}
         nosoftware=on
+        ca=/etc/ssl/cert.pem
   - name: run ocsinventory-agent
     shell: '/usr/local/bin/ocsinventory-agent'
     changed_when: False
@@ -150,9 +154,14 @@ block:
       mode: '0640'
       group: _ups
     tags: conf,ups
+  - name: rc script
+    copy:
+      src: upsmon_openbsd_rc
+      dest: /etc/rc.d/upsmon
+    tags: conf,ups
   - name: service upsmon
     service:
-      name: nut_upsmon
+      name: upsmon
       state: started
       enabled: True
     tags: ups
