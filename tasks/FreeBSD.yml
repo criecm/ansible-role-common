@@ -22,7 +22,7 @@
 - name: register is_vm
   set_fact:
     is_vm: True
-  when: vm_status.rc == 0 and vm_status.stdout != "none"
+  when: ( vm_status.rc == 0 and vm_status.stdout != "none" ) or (jail_status.rc == 0 and jail_status.stdout == "1")
 
 # packages ecm
 - block:
@@ -240,4 +240,4 @@
       state: started
       enabled: True
     tags: ups
-  when: nut_monitor != "" and not is_vm
+  when: nut_monitor != "" and not is_vm and not is_jail
