@@ -78,6 +78,10 @@ resolvers:
 #  - { network: '192.168.1.0/24', domain: 'home' }
 #  - { network: '0.0.0.0/0', domain: 'default.domain' }
 
+# force rewrite of resolv.conf
+overwrite_resolvconf: False
+
+# timezone
 host_timezone: 'Europe/Paris'
 
 # default prefix for commands
