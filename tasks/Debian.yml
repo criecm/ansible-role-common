@@ -29,6 +29,20 @@
     when: zoneinfo.stdout != host_timezone
   tags: timezone
 
+# locales
+- name: set locales
+  lineinfile:
+    dest: /etc/locale.gen
+    line: '{{ locale }}'
+    regexp: '{{ locale }}'
+  with_items:
+    - en_US.UTF-8 UTF-8
+    - fr_FR.UTF-8 UTF-8
+  loop_control:
+    loop_var: locale
+  notify: debian regen locales
+  tags: locales
+
 # packages
 - name: packages
   apt:
