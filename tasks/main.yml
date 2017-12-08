@@ -73,16 +73,17 @@
       state: started
       enabled: yes
   - name: get ip for munin
-    shell: "host {{ ansible_hostname }} | awk '{ print $NF }'"
+    shell: "getent hosts {{ ansible_hostname }} | awk '{ print $1 }'"
     register: munin_node_address
     delegate_to: '{{ munin_servers[0] }}'
+    changed_when: False
 # TODO: a finir
   - name: add config in munin server
     copy:
       dest: '/usr/local/etc/munin/munin-conf.ansible.d/{{ inventory_hostname }}.conf'
       content: |
         [{{ ansible_fqdn }}]
-        address {{ munin_node_address.stdout_lines | match("10.") }}
+        address {{ munin_node_address.stdout }}
     delegate_to: '{{munin_server}}'
     with_items:
       - '{{ munin_servers }}'
