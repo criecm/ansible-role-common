@@ -10,7 +10,7 @@
     loop_var: includefile
   tags: vars
 
-- include: '{{ includefile }}'
+- include_tasks: '{{ includefile }}'
   with_first_found:
     - files:
         - '{{ ansible_os_family }}.yml'
@@ -67,6 +67,12 @@
     shell: 'munin-node-configure --shell | fgrep -v plugins/if_ | fgrep -v plugins/sendmail_ | sh'
     args:
       creates: '{{ munin_etcdir }}/plugins/load'
+  - name: snmp plugin
+    file:
+      src: '{{ prefix }}/share/munin/plugins/snmp__if_multi'
+      dest: '{{ etcprefix }}/etc/munin/plugins/snmp_localhost_if_multi'
+      state: link
+    when: not is_jail
   - name: enable service
     service:
       name: '{{ munin_service }}'

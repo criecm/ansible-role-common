@@ -1,14 +1,11 @@
 galaxy_info:
   author: Geoffroy Desvernay
-  description: base role for working system
+  description: base role for working system here
   company: Ecole Centrale Marseille
 
   license: BSD
 
   min_ansible_version: 2.4
-
-  # If this a Container Enabled role, provide the minimum Ansible Container version.
-  # min_ansible_container_version:
 
   platforms:
     - name: FreeBSD
@@ -32,5 +29,3 @@ galaxy_info:
     - authorizedkeys
 
 dependencies: []
-  # List your role dependencies here, one per line. Be sure to remove the '[]' above,
-  # if you add dependencies to this list.
