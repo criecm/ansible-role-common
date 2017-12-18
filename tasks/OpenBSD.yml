@@ -38,7 +38,7 @@
     owner: 0
     group: 0
     mode: '0755'
-  when: ldap_base != ""
+  when: ldap_base != "" and do_sysadm
   tags: ldapconf
 
 # mailrelay
@@ -48,7 +48,7 @@
     line: 'accept from local for any relay via {{mailrelay}}'
     regexp: '^accept .*for any relay'
   notify: restart smtpd
-  when: mailrelay != '' and not is_mailrelay
+  when: mailrelay != '' and not is_mailrelay and do_sysadm
   tags: mailclient
 
 # timezone
@@ -59,6 +59,7 @@
     state: link
     force: yes
   tags: timezone
+  when: do_sysadm
 
 - block:
   - name: syslog central
@@ -75,7 +76,7 @@
       regexp: '^auth.*@.*'
       line: 'auth.info;authpriv.info					@{{ syslog_auth_server | default(syslog_server) }}'
     notify: restart BSD syslogd
-  when: syslog_server != '' and not is_syslogd
+  when: syslog_server != '' and not is_syslogd and (do_sysadm or do_ssi)
   tags: syslog
 
 # ocsinventory
@@ -83,6 +84,7 @@
   stat:
     path: /usr/local/bin/ocsinventory-agent
   register: ocsinstalled
+  when: do_sysadm
 
 - block:
   - name: dependencies
@@ -112,7 +114,7 @@
     args:
       chdir: /root/Ocsinventory-Unix-Agent-2.3
       creates: /usr/local/bin/ocsinventory-agent
-  when: not ocsinstalled.stat.exists and ocsinventory_server != "" and not is_vm
+  when: do_sysadm and not ocsinstalled.stat.exists and ocsinventory_server != "" and not is_vm
 
 # config ocs
 - block:
@@ -132,7 +134,7 @@
   - name: run ocsinventory-agent
     shell: '/usr/local/bin/ocsinventory-agent'
     changed_when: False
-  when: ocsinventory_server != "" and not is_vm
+  when: do_sysadm and ocsinventory_server != "" and not is_vm
 
 # NUT
 - block:
@@ -165,4 +167,4 @@
       state: started
       enabled: True
     tags: ups
-  when: nut_monitor != "" and not is_vm
+  when: nut_monitor != "" and not is_vm and do_sysadm

@@ -1,6 +1,5 @@
 ---
 # taches communes ECM
-
 - include_vars: '{{ includefile }}'
   with_first_found:
     - files:
@@ -17,6 +16,7 @@
       skip: True
   loop_control:
     loop_var: includefile
+  when: do_sysadm
 
 - name: resolv.conf
   template:
@@ -25,7 +25,7 @@
     owner: root
     mode: '0644'
   tags: resolver
-  when: not is_jail
+  when: not is_jail and do_sysadm
 
 # ntp
 - name: config ntpd
@@ -33,14 +33,14 @@
     src: '{{ ntp_config }}.j2'
     dest: '/etc/{{ ntp_config }}'
     mode: '0644'
-  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm'
+  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm and do_sysadm'
   notify: restart ntpd
 - name: enable ntp
   service:
     name: '{{ ntp_service }}'
     enabled: yes
     state: started
-  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm'
+  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm and do_sysadm'
 - name: Installe CA local
   copy:
     src: '{{x509_ca_file}}'
@@ -49,7 +49,7 @@
     group: 0
     mode: '0644'
   tags: sslecm
-  when: x509_ca_file != ''
+  when: x509_ca_file != '' and do_sysadm
 
 # munin config
 - block:
@@ -95,7 +95,7 @@
       - '{{ munin_servers }}'
     loop_control:
       loop_var: munin_server
-  when: munin_servers | count() > 0 and not is_vm
+  when: munin_servers | count() > 0 and not is_vm and do_sysadm
 
 # ldap
 - block:
@@ -115,7 +115,7 @@
       path: '{{ldap_etcdir}}/ldap.conf'
       mode: '0644'
   tags: ldapconf
-  when: ldap_base != "" and ldap_uri != "" and x509_ca_path != ""
+  when: ldap_base != "" and ldap_uri != "" and x509_ca_path != "" and do_sysadm
 
 # ssh host keys
 - block:
@@ -152,6 +152,7 @@
       - '{{ default_sshd_lines }}'
       - '{{ sshd_lines }}'
   tags: sshdconf
+  when: do_sysadm
 
 # root ssh access and authorized_keys
 - block:
@@ -177,6 +178,7 @@
     with_fileglob:
       - cles_ssh/*.del
   tags: rootsshconf
+  when: do_sysadm or do_ssi
 
 # root zsh config
 - block:
@@ -199,6 +201,7 @@
       - '{{ playbook_dir }}/files/zshrc'
       - zshrc.j2
   tags: zshroot
+  when: do_sysadm
 
 # git repos
 - block:
@@ -232,7 +235,7 @@
       - '{{ host_gits }}'
       - '{{ role_gits }}'
   tags: gits
-  when: 'gits | union(host_gits) | union(role_gits) | count() > 0'
+  when: 'gits | union(host_gits) | union(role_gits) | count() > 0 and do_sysadm'
 
 - name: crons
   cron: '{{ cron }}'
@@ -240,7 +243,7 @@
   loop_control:
     loop_var: cron
   tags: crons
-  when: crons | count > 0
+  when: crons | count > 0 and do_sysadm
 
 - name: alias mail root
   lineinfile:
@@ -248,5 +251,5 @@
     line: "root: {{rootmailto}}"
     regexp: '^root:'
   notify: newaliases
-  when: rootmailto != ''
+  when: rootmailto != '' and do_sysadm
   tags: mailclient

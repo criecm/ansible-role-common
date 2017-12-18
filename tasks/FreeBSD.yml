@@ -38,7 +38,7 @@
       dest: '/usr/local/etc/pkg/repos/{{ pkg_repo_conf | regex_replace(".*/", "") }}'
       validate: 'pkg -vv -C %s'
       mode: '0644'
-  when: pkg_repo_conf != ''
+  when: pkg_repo_conf != '' and do_sysadm
   tags: baseconf, pkg
 
 # packages standard
@@ -68,7 +68,7 @@
     - dmidecode
     - ipmitool
     - smartmontools
-  when: not is_jail and not is_vm
+  when: not is_jail and not is_vm and do_sysadm
   tags: baseconf, pkg
 
 # mail via relay
@@ -78,7 +78,7 @@
     line: "FEATURE(`msp', `[{{mailrelay}}]')"
     regexp: '^FEATURE\(.?msp'
   register: domailrelay
-  when: mailrelay != '' and not is_mailrelay
+  when: mailrelay != '' and not is_mailrelay and do_sysadm
   tags: baseconf, mailclient
 
 - block:
@@ -111,7 +111,7 @@
     check_mode: False
   - name: set timezone
     command: 'tzsetup {{ host_timezone }}'
-    when: zoneinfo.stdout != host_timezone
+    when: zoneinfo.stdout != host_timezone and do_sysadm
   tags: baseconf, timezone
 
 # syslog
@@ -138,7 +138,7 @@
   - name: set syslogd_flags
     command: 'sysrc syslogd_flags="-c -s"'
     when: sysrc_syslogd_flags.stdout != "-c -s"
-  when: syslog_server != '' and not is_syslogd
+  when: syslog_server != '' and not is_syslogd and do_sysadm
   tags: baseconf, syslog
 
 # hardening freebsd
@@ -159,6 +159,7 @@
       - { regexp: '^security.bsd.see_other_uids=', line: 'security.bsd.see_other_uids=0' }
     when: 'freebsd_allow_see_other | default(False)'
   tags: baseconf, security
+  when: do_sysadm or do_ssi
 
 # ocsinventory
 - block:
@@ -182,7 +183,7 @@
     failed_when: False
     changed_when: False
   tags: ocsinventory
-  when: ocsinventory_server != "" and not is_jail and not is_vm
+  when: ocsinventory_server != "" and not is_jail and not is_vm and do_sysadm
 
 # snmp
 - name: config snmpd
@@ -194,7 +195,7 @@
     - { line: 'begemotSnmpdModulePath."ucd" = "/usr/local/lib/snmp_ucd.so"', regexp: '^begemotSnmpdModulePath.*snmp_ucd' }
 #    - { line: 'begemotSnmpdModulePath."hostres" = "/usr/lib/snmp_hostres.so"', regexp: '^begemotSnmpdModulePath.*snmp_hostres' }
   notify: restart bsnmpd
-  when: not is_jail and not is_vm
+  when: not is_jail and not is_vm and do_sysadm
   tags: baseconf, snmpd
 
 # ntp leapfile
@@ -205,6 +206,7 @@
     insertafter: 'daily_ntpd_leapfile_enable'
     dest: /etc/periodic.conf
     create: True
+  when: not is_jail and not is_vm and do_sysadm
   tags: baseconf, ntpd
 
 - name: enable bsnmpd
@@ -212,7 +214,7 @@
     name: bsnmpd
     state: started
     enabled: yes
-  when: not is_jail and not is_vm
+  when: not is_jail and not is_vm and do_sysadm
   tags: baseconf, snmpd
 
 # NUT
@@ -240,4 +242,4 @@
       state: started
       enabled: True
     tags: ups
-  when: nut_monitor != "" and not is_vm and not is_jail
+  when: nut_monitor != "" and not is_vm and not is_jail and do_sysadm

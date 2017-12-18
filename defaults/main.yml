@@ -2,6 +2,11 @@
 # vars to define elsewhere (group_vars/, host_vars/, inventory, …) see 
 # http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence
 #
+# allow disabling most actions, keeping vars
+do_sysadm: True
+# if False, disable security-related too
+do_ssi: True
+#
 # basedn LDAP
 ldap_base:
 # URI LDAP
