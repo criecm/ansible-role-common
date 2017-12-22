@@ -44,3 +44,7 @@
 - name: debian regen locales
   command: /usr/sbin/locale-gen
 
+- name: touch console.log
+  file:
+    path: /var/log/console.log
+    state: touch

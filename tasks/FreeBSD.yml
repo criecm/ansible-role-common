@@ -130,6 +130,13 @@
       regexp: '^auth.*@.*'
       insertafter: '^\*.\*\s+@.*'
     notify: restart BSD syslogd
+  - name: console.log
+    lineinfile:
+      dest: /etc/syslog.conf
+      line: 'console.info       /var/log/console.log'
+      regexp: '.*console.log'
+      insertafter: 'console.log'
+    notify: touch console.log
   - name: get rc flags
     command: 'sysrc -n syslogd_flags'
     register: sysrc_syslogd_flags
