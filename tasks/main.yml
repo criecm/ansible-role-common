@@ -253,3 +253,8 @@
   notify: newaliases
   when: rootmailto != '' and do_sysadm
   tags: mailclient
+
+- name: export mailrelay var
+  set_fact:
+    mailrelay: '{{ mailrelay }}'
+  tags: vars
