@@ -56,11 +56,13 @@
   - name: munin allow servers
     lineinfile:
       dest: '{{ munin_etcdir }}/munin-node.conf'
-      line: 'allow ^{{ munin_server }}'
-      regexp: '^allow.*{{ munin_server }}'
+      line: 'allow ^{{ munin_server | replace(".","\.") }}$'
+      regexp: '^allow.*{{ munin_server | replace(".","\\.") }}\$$'
       insertafter: 'allow '
     notify: restart munin
-    with_items: '{{ munin_servers }}'
+    with_items: 
+      - '{{ munin_servers }}'
+      - '127.0.0.1'
     loop_control:
       loop_var: munin_server
   - name: enable plugins
