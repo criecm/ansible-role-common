@@ -85,6 +85,7 @@
     register: munin_node_address
     delegate_to: '{{ munin_servers[0] }}'
     changed_when: False
+    check_mode: False
 # TODO: a finir
   - name: add config in munin server
     copy:
