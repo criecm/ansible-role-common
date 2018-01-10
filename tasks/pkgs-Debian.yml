@@ -1,0 +1,18 @@
+---
+# packages
+- name: packages
+  apt:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - '{{ root_shell | basename }}'
+    - git
+    - ntp
+    - ldap-utils
+    - munin-node
+    - '{{ pkgs }}'
+    - '{{ role_pkgs }}'
+    - '{{ host_pkgs }}'
+  tags: pkgs
+
+

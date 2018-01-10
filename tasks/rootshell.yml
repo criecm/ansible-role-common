@@ -1,0 +1,30 @@
+---
+- name: get shell path
+  command: 'which {{ root_shell }}'
+  changed_when: False
+  register: shellpath
+  when: 'not shellpath | default(False)'
+
+- name: root shell in /etc/shells
+  lineinfile:
+    dest: /etc/shells
+    line: "{{ shellpath.stdout }}"
+
+- name: shell root
+  user:
+    name: root
+    shell: "{{ shellpath.stdout }}"
+
+- name: '{{ root_shell | basename }}rc'
+  template:
+    dest: '/root/.{{ root_shell | basename }}rc'
+    src: '{{ item }}'
+    mode: '0600'
+    owner: root
+  with_first_found:
+    - '{{ playbook_dir }}/templates/{{ root_shell | basename }}rc.j2'
+    - '{{ playbook_dir }}/files/{{ root_shell | basename }}rc'
+    - '{{ root_shell | basename }}rc.j2'
+    - skip: True
+
+

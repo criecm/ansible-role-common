@@ -1,0 +1,59 @@
+---
+- name: ssh host keys
+  copy:
+    src: '{{ item }}'
+    dest: '/etc/ssh/{{ item | regex_replace(".*/","") }}'
+    owner: root
+    group: 0
+    mode: '0600'
+  notify: restart sshd
+  with_fileglob:
+    - '{{ playbook_dir }}/files/ssh/{{ inventory_hostname }}/ssh_host*_key'
+- name: ssh host pub keys
+  copy:
+    src: '{{ item }}'
+    dest: '/etc/ssh/{{ item | regex_replace(".*/","") }}'
+    owner: root
+    group: 0
+    mode: '0644'
+  notify: restart sshd
+  with_fileglob:
+    - '{{ playbook_dir }}/files/ssh/{{ inventory_hostname }}/ssh_host*_key.pub'
+- name: sshd_config
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "{{item.regexp}}"
+    line: "{{item.line}}"
+    insertafter: "{{item.insertafter}}"
+    state: present
+    validate: '/usr/sbin/sshd -tf %s'
+  notify: restart sshd
+  with_items: 
+    - '{{ default_sshd_lines }}'
+    - '{{ sshd_lines }}'
+
+- name: config ssh root
+  file:
+    path: /root/.ssh
+    state: directory
+    mode: '0700'
+    owner: root
+    group: 0
+
+- name: root authorized_keys
+  authorized_key:
+    key: "{{ lookup('file',item) }}"
+    user: root
+    key_options: "environment=\"DSI={{item | regex_replace('^.*/(\\w+)\\.pub','\\1')}}\""
+  with_fileglob:
+    - cles_ssh/*.pub
+
+- name: root de-authorized keys
+  authorized_key:
+    key: "{{ lookup('file',item) }}"
+    user: root
+    state: absent
+  with_fileglob:
+    - cles_ssh/*.del
+
+

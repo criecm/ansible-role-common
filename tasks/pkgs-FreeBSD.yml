@@ -1,0 +1,49 @@
+---
+# packages ecm
+- block:
+  - name: mkdir pkgrepo
+    file:
+      path: /usr/local/etc/pkg/repos
+      state: directory
+      mode: '0755'
+  
+  - name: pkg repo ecm
+    copy:
+      src: '{{ pkg_repo_conf }}'
+      dest: '/usr/local/etc/pkg/repos/{{ pkg_repo_conf | regex_replace(".*/", "") }}'
+      validate: 'pkg -vv -C %s'
+      mode: '0644'
+  when: pkg_repo_conf != '' and do_sysadm
+  tags: pkgs
+
+# packages standard
+- name: pkgs standard
+  pkgng:
+    name: '{{item}}'
+    state: present
+  with_items:
+    - git
+    - rsync
+    - tmux
+    - vim-lite
+    - '{{ root_shell | basename }}'
+    - munin-node
+    - openldap-sasl-client
+    - '{{ pkgs }}'
+    - '{{ role_pkgs }}'
+    - '{{ host_pkgs }}'
+  tags: pkgs
+
+- name: pkgs pkg machine physique
+  pkgng:
+    name: '{{item}}'
+    state: present
+  with_items:
+    - bsnmp-ucd
+    - dmidecode
+    - ipmitool
+    - smartmontools
+  when: not is_jail and not is_vm and do_sysadm
+  tags: pkgs
+
+

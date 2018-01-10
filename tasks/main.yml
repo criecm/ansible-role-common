@@ -17,6 +17,7 @@
   loop_control:
     loop_var: includefile
   when: do_sysadm
+  tags: vars
 
 - name: resolv.conf
   template:
@@ -27,20 +28,19 @@
   tags: resolver
   when: not is_jail and do_sysadm
 
+# pkgs
+- name: install packages
+  include_tasks: 'pkgs-{{ ansible_os_family }}.yml'
+  tags: pkg
+  when: do_sysadm
+
 # ntp
 - name: config ntpd
-  template:
-    src: '{{ ntp_config }}.j2'
-    dest: '/etc/{{ ntp_config }}'
-    mode: '0644'
+  include_tasks: ntpd.yml
   when: 'ntp_servers or ntp_pools and not is_jail and not is_vm and do_sysadm'
-  notify: restart ntpd
-- name: enable ntp
-  service:
-    name: '{{ ntp_service }}'
-    enabled: yes
-    state: started
-  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm and do_sysadm'
+  tags: ntp
+
+# x509
 - name: Installe CA local
   copy:
     src: '{{x509_ca_file}}'
@@ -48,198 +48,52 @@
     owner: root
     group: 0
     mode: '0644'
-  tags: sslecm
   when: x509_ca_file != '' and do_sysadm
+  tags: x509
+
+# syslog
+- name: syslog client
+  include_tasks: 'syslog-{{ ansible_os_family }}.yml'
+  when: syslog_server != '' and not is_syslogd and do_sysadm
+  tags: syslog
+
+# snmp (missing Debian and OpenBSD)
+- name: snmp server
+  include_tasks: 'snmpd-{{ ansible_os_family }}.yml'
+  when: not is_jail and not is_vm and do_sysadm and do_snmp
+  tags: snmpd
 
 # munin config
-- block:
-  - name: munin allow servers
-    lineinfile:
-      dest: '{{ munin_etcdir }}/munin-node.conf'
-      line: 'allow ^{{ munin_server | replace(".","\.") }}$'
-      regexp: '^allow.*{{ munin_server | replace(".","\\.") }}\$$'
-      insertafter: 'allow '
-    notify: restart munin
-    with_items: 
-      - '{{ munin_servers }}'
-      - '127.0.0.1'
-    loop_control:
-      loop_var: munin_server
-  - name: enable plugins
-    shell: 'munin-node-configure --shell | fgrep -v plugins/if_ | fgrep -v plugins/sendmail_ | sh'
-    args:
-      creates: '{{ munin_etcdir }}/plugins/load'
-  - name: snmp plugin
-    file:
-      src: '{{ prefix }}/share/munin/plugins/snmp__if_multi'
-      dest: '{{ etcprefix }}/etc/munin/plugins/snmp_localhost_if_multi'
-      state: link
-    when: not is_jail
-  - name: enable service
-    service:
-      name: '{{ munin_service }}'
-      state: started
-      enabled: yes
-  - name: get ip for munin
-    shell: "getent hosts {{ ansible_hostname }} | awk '{ print $1 }'"
-    register: munin_node_address
-    delegate_to: '{{ munin_servers[0] }}'
-    changed_when: False
-    check_mode: False
-# TODO: a finir
-  - name: add config in munin server
-    copy:
-      dest: '/usr/local/etc/munin/munin-conf.ansible.d/{{ inventory_hostname }}.conf'
-      content: |
-        [{{ ansible_fqdn }}]
-        address {{ munin_node_address.stdout }}
-    delegate_to: '{{munin_server}}'
-    with_items:
-      - '{{ munin_servers }}'
-    loop_control:
-      loop_var: munin_server
-  when: munin_servers | count() > 0 and not is_vm and do_sysadm
+- name: munin node
+  include_tasks: munin.yml
+  when: munin_servers | count() > 0 and not is_vm and not is_jail and do_sysadm
+  tags: munin
 
-# ldap
-- block:
-  - name: Config ldap.conf
-    lineinfile:
-      dest: '{{ldap_etcdir}}/ldap.conf'
-      regexp: '{{ item.regexp }}'
-      line: '{{ item.line }}'
-      state: present
-    with_items:
-      - { regexp: '^BASE', line: 'BASE {{ldap_base}}' }
-      - { regexp: '^URI', line: 'URI {{ldap_uri}}' }
-      - { regexp: '^TLS_REQCERT', line: 'TLS_REQCERT {{ldap_tls_reqcert}}' }
-      - { regexp: '^TLS_CACERT', line: 'TLS_CACERT {{x509_ca_path}}' }
-  - name: chmod 644 ldap.conf
-    file:
-      path: '{{ldap_etcdir}}/ldap.conf'
-      mode: '0644'
-  tags: ldapconf
+# ldap TLS client config
+- name: ldap client
+  include_tasks: ldap.yml
   when: ldap_base != "" and ldap_uri != "" and x509_ca_path != "" and do_sysadm
+  tags: ldap
 
-# ssh host keys
-- block:
-  - name: ssh host keys
-    copy:
-      src: '{{ item }}'
-      dest: '/etc/ssh/{{ item | regex_replace(".*/","") }}'
-      owner: root
-      group: 0
-      mode: '0600'
-    notify: restart sshd
-    with_fileglob:
-      - '{{ playbook_dir }}/files/ssh/{{ inventory_hostname }}/ssh_host*_key'
-  - name: ssh host pub keys
-    copy:
-      src: '{{ item }}'
-      dest: '/etc/ssh/{{ item | regex_replace(".*/","") }}'
-      owner: root
-      group: 0
-      mode: '0644'
-    notify: restart sshd
-    with_fileglob:
-      - '{{ playbook_dir }}/files/ssh/{{ inventory_hostname }}/ssh_host*_key.pub'
-  - name: sshd_config
-    lineinfile:
-      dest: /etc/ssh/sshd_config
-      regexp: "{{item.regexp}}"
-      line: "{{item.line}}"
-      insertafter: "{{item.insertafter}}"
-      state: present
-      validate: '/usr/sbin/sshd -tf %s'
-    notify: restart sshd
-    with_items: 
-      - '{{ default_sshd_lines }}'
-      - '{{ sshd_lines }}'
-  tags: sshdconf
-  when: do_sysadm
-
+# sshd config and keys
 # root ssh access and authorized_keys
-- block:
-  - name: config ssh root
-    file:
-      path: /root/.ssh
-      state: directory
-      mode: '0700'
-      owner: root
-      group: 0
-  - name: root authorized_keys
-    authorized_key:
-      key: "{{ lookup('file',item) }}"
-      user: root
-      key_options: "environment=\"DSI={{item | regex_replace('^.*/(\\w+)\\.pub','\\1')}}\""
-    with_fileglob:
-      - cles_ssh/*.pub
-  - name: root unauthorized keys
-    authorized_key:
-      key: "{{ lookup('file',item) }}"
-      user: root
-      state: absent
-    with_fileglob:
-      - cles_ssh/*.del
-  tags: rootsshconf
-  when: do_sysadm or do_ssi
-
-# root zsh config
-- block:
-  - name: zsh in /etc/shells
-    lineinfile:
-      dest: /etc/shells
-      line: "{{zshpath}}"
-  - name: shell root
-    user:
-      name: root
-      shell: "{{zshpath}}"
-  - name: zshrc
-    template:
-      dest: /root/.zshrc
-      src: '{{ item }}'
-      mode: '0600'
-      owner: root
-    with_first_found:
-      - '{{ playbook_dir }}/templates/zshrc.j2'
-      - '{{ playbook_dir }}/files/zshrc'
-      - zshrc.j2
-  tags: zshroot
+- include_tasks: sshd.yml
   when: do_sysadm
+  tags: sshd
 
-# git repos
-- block:
-  - name: gits
-    file:
-      path: '{{ gits_root }}'
-      state: directory
-      mode: '0750'
-      owner: root
-      group: 0
-    when: 'gits_root != "/root"'
-  - name: cle ssh depoiement
-    copy:
-      dest: '/root/.ssh/{{ git_ssh_key }}'
-      src: 'files/{{ git_ssh_key }}'
-      owner: root
-      group: 0
-      mode: '0600'
-    when: 'git_ssh_key != ""'
-  - name: repos git gits
-    git:
-      dest: '{{ gits_root }}/{{ item.dest }}'
-      repo: '{{ item.repo }}'
-      accept_hostkey: yes
-      key_file: '/root/.ssh/{{ git_ssh_key }}'
-      depth: 2
-      umask: '{{ item.umask | default("0022") }}'
-      version: '{{ item.version | default("master") }}'
-    with_items: 
-      - '{{ gits }}'
-      - '{{ host_gits }}'
-      - '{{ role_gits }}'
+# root shell config
+- name: root shell
+  include_tasks: rootshell.yml
+  when: 'root_shell != "" and do_sysadm'
+  tags: rootshell
+
+# gits helper
+- name: gits
+  include_tasks: gits.yml
   tags: gits
   when: 'gits | union(host_gits) | union(role_gits) | count() > 0 and do_sysadm'
 
+# crons
 - name: crons
   cron: '{{ cron }}'
   with_items: '{{ crons }}'
@@ -247,6 +101,12 @@
     loop_var: cron
   tags: crons
   when: crons | count > 0 and do_sysadm
+
+# mailrelay
+- name: mailrelay
+  include_tasks: 'mailrelay-{{ ansible_os_family }}.yml'
+  when: 'mailrelay != "" and not is_mailrelay and do_sysadm'
+  tags: mailrelay
 
 - name: alias mail root
   lineinfile:
@@ -260,4 +120,16 @@
 - name: export mailrelay var
   set_fact:
     mailrelay: '{{ mailrelay }}'
-  tags: vars
+  tags: vars,mailrelay
+
+# NUT (Network Ups Tools)
+- name: Network Ups Tools
+  include_tasks: 'mailrelay-{{ ansible_os_family }}.yml'
+  when: 'nut_monitor != "" and not is_vm and not is_jail and do_sysadm'
+  tags: nut
+
+# ocsinventory agent
+- name: ocsinventory agent
+  include_tasks: 'ocsinventory-{{ ansible_os_family }}.yml'
+  when: ocsinventory_server != "" and not is_jail and not is_vm and do_sysadm
+  tags: ocsinventory

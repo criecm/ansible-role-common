@@ -14,8 +14,8 @@ ldap_uri: 'ldaps://ldapr.univ.fr/ ldaps://ldap.univ.fr/'
 # openldap config directory
 ldap_etcdir: /etc/ldap
 
-# zsh path
-zshpath: /bin/zsh
+# root shell
+root_shell: zsh
 
 # etcprefix (/usr/local or not)
 etcprefix: ''

@@ -1,0 +1,42 @@
+---
+- name: munin allow servers
+  lineinfile:
+    dest: '{{ munin_etcdir }}/munin-node.conf'
+    line: 'allow ^{{ munin_server | replace(".","\.") }}$'
+    regexp: '^allow.*{{ munin_server | replace(".","\\.") }}\$$'
+    insertafter: 'allow '
+  notify: restart munin
+  with_items: 
+    - '{{ munin_servers }}'
+    - '127.0.0.1'
+  loop_control:
+    loop_var: munin_server
+- name: enable plugins
+  shell: 'munin-node-configure --shell | fgrep -v plugins/if_ | fgrep -v plugins/sendmail_ | sh'
+  args:
+    creates: '{{ munin_etcdir }}/plugins/load'
+- name: snmp plugin
+  file:
+    src: '{{ prefix }}/share/munin/plugins/snmp__if_multi'
+    dest: '{{ etcprefix }}/etc/munin/plugins/snmp_localhost_if_multi'
+    state: link
+  when: not is_jail
+- name: enable service
+  service:
+    name: '{{ munin_service }}'
+    state: started
+    enabled: yes
+# TODO: a finir
+- name: add config in munin server
+  copy:
+    dest: '/usr/local/etc/munin/munin-conf.ansible.d/{{ inventory_hostname }}.conf'
+    content: |
+      [{{ ansible_fqdn }}]
+      address {{ inventory_hostname }}
+  delegate_to: '{{munin_server}}'
+  with_items:
+    - '{{ munin_servers }}'
+  loop_control:
+    loop_var: munin_server
+
+

@@ -1,7 +1,6 @@
 ---
 etcprefix: /usr/local
 ldap_etcdir: /usr/local/etc/openldap
-zshpath: /usr/local/bin/zsh
 mailaliases: /etc/mail/aliases
 prefix: /usr/local
 ntp_service: ntpd

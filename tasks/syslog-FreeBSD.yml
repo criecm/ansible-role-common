@@ -1,0 +1,37 @@
+---
+# syslog
+- name: syslog central
+  lineinfile:
+    dest: /etc/syslog.conf
+    line: '*.*			@{{ syslog_server }}'
+    regexp: '^\*.\*\s+@.*'
+    insertafter: '^#\*\.\*'
+  notify: restart BSD syslogd
+
+- name: syslog centrale auth
+  lineinfile:
+    dest: /etc/syslog.conf
+    line: 'auth.info;authpriv.info			@{{ syslog_auth_server }}'
+    regexp: '^auth.*@.*'
+    insertafter: '^\*.\*\s+@.*'
+  notify: restart BSD syslogd
+
+- name: console.log
+  lineinfile:
+    dest: /etc/syslog.conf
+    line: 'console.info       /var/log/console.log'
+    regexp: '.*console.log'
+    insertafter: 'console.log'
+  notify: touch console.log
+
+- name: get rc flags
+  command: 'sysrc -n syslogd_flags'
+  register: sysrc_syslogd_flags
+  changed_when: False
+  check_mode: False
+
+- name: set syslogd_flags
+  command: 'sysrc syslogd_flags="-c -s"'
+  when: sysrc_syslogd_flags.stdout != "-c -s"
+
+

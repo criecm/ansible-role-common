@@ -14,7 +14,7 @@
 * /usr/local/admin/sysutils/common depuis GIT (et plus selon variables)
 * cron daily/weekly ecm (et supression des anciens de CVS)
 * snmpd (TODO: Debian et OpenBSD)
-* zsh pour root + config + aliases
+* preferred shell pour root + it's config + aliases
 * packages supplementaires (variable `pkgs`)
 
 ## templates and files
@@ -52,6 +52,9 @@
     Ip's of munin master node(s). Will trigger munin-node install
   * `ocsinventory_server` ('')
     If present, install and configure openinventory-agent
+  * `root_shell` (zsh)
+    Set your preferred one here :) (or set it empty to skip all this)
+    put your rc file in {{ playbook_dir }}/files/{{ root_shell }}rc
 
 ### FreeBSD specific
 
