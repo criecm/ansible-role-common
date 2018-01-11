@@ -50,6 +50,11 @@
       * `version` (master)
   * `munin_servers` ([])
     Ip's of munin master node(s). Will trigger munin-node install
+    and allow these IP addresses on client
+  * `munin_host` ('')
+    Munin host for ansible to declare each hosts in ...
+  * `munin_host_dir` ('/etc/munin/munin-conf.d')
+    A simple host declaration will be added in there (eg: /etc/munin/munin-conf.d) on `munin_host`
   * `ocsinventory_server` ('')
     If present, install and configure openinventory-agent
   * `root_shell` (zsh)

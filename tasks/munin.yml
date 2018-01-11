@@ -11,6 +11,7 @@
     - '127.0.0.1'
   loop_control:
     loop_var: munin_server
+
 - name: enable plugins
   shell: 'munin-node-configure --shell | fgrep -v plugins/if_ | fgrep -v plugins/sendmail_ | sh'
   args:
@@ -21,22 +22,20 @@
     dest: '{{ etcprefix }}/etc/munin/plugins/snmp_localhost_if_multi'
     state: link
   when: not is_jail
-- name: enable service
+
+- name: enable munin service
   service:
     name: '{{ munin_service }}'
     state: started
     enabled: yes
-# TODO: a finir
+
 - name: add config in munin server
   copy:
-    dest: '/usr/local/etc/munin/munin-conf.ansible.d/{{ inventory_hostname }}.conf'
+    dest: '{{ munin_host_dir }}/{{ inventory_hostname }}.conf'
     content: |
       [{{ ansible_fqdn }}]
       address {{ inventory_hostname }}
-  delegate_to: '{{munin_server}}'
-  with_items:
-    - '{{ munin_servers }}'
-  loop_control:
-    loop_var: munin_server
-
+    force: no
+  delegate_to: '{{ munin_host }}'
+  when: munin_host
 

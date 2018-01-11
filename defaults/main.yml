@@ -145,6 +145,8 @@ ocsinventory_tag:
 # munin
 munin_servers: []
 munin_service: munin-node
+munin_host_dir: /etc/munin/munin-conf.d
+munin_host:
 
 # NUT
 nut_monitor:
