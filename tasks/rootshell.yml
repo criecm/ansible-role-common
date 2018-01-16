@@ -2,8 +2,8 @@
 - name: get shell path
   command: 'which {{ root_shell }}'
   changed_when: False
+  check_mode: False
   register: shellpath
-  when: 'not shellpath | default(False)'
 
 - name: root shell in /etc/shells
   lineinfile:
