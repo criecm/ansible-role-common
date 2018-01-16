@@ -10,7 +10,7 @@
 * syslog centralisé:
   * sauf si `is_syslogd=True`
   * seulement si `syslog_server` existe
-* deploiement des cles ssh `files/cles_ssh/*.pub` (+env `DSI=$user`)
+* deploiement des cles ssh `files/cles_ssh/*.pub`
 * /usr/local/admin/sysutils/common depuis GIT (et plus selon variables)
 * cron daily/weekly ecm (et supression des anciens de CVS)
 * snmpd (TODO: Debian et OpenBSD)
@@ -68,10 +68,12 @@
   * `is_jail` (False)
     if True, will skip hardware monitoring tools (smart, ipmi, snmp, dmidecode, munin)
 
-### BSD specific
+### Packages
 
   * `pkgs` ([])
-    additionnal packages to install
+    additionnal packages to install using distribution's package system
+  * `host_pkgs` `role_pkgs` ([])
+    other packages defined in inventory or roles (or whatever)
 
 ### Syslog
 

@@ -44,7 +44,6 @@
   authorized_key:
     key: "{{ lookup('file',item) }}"
     user: root
-    key_options: "environment=\"DSI={{item | regex_replace('^.*/(\\w+)\\.pub','\\1')}}\""
   with_fileglob:
     - cles_ssh/*.pub
 
