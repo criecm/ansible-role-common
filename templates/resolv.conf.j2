@@ -12,7 +12,7 @@ nameserver {{ns.ip}}
 {% endif %}
 {% endfor %}
 
-{% if ansible_system == "FreeBSD" %}
+{% if ansible_os_family == "FreeBSD" or ansible_os_family == "Debian" %}
 # reduit le timeout a 2s avant de passer au suivant
 options timeout:2
 {% endif %}
