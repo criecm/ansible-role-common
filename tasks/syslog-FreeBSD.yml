@@ -1,19 +1,23 @@
 ---
 # syslog
-- name: syslog central
-  lineinfile:
-    dest: /etc/syslog.conf
-    line: '*.*			@{{ syslog_server }}'
-    regexp: '^\*.\*\s+@.*'
-    insertafter: '^#\*\.\*'
+
+- name: mkdir
+  file:
+    dest: /usr/local/etc/syslog.d
+    state: directory
+
+- name: authlog
+  copy:
+    content: |
+      security.*;auth.*             @{{ syslog_auth_server | default(syslog_server) }}
+    dest: /usr/local/etc/syslog.d/authlog
   notify: restart BSD syslogd
 
-- name: syslog centrale auth
-  lineinfile:
-    dest: /etc/syslog.conf
-    line: 'auth.info;authpriv.info			@{{ syslog_auth_server }}'
-    regexp: '^auth.*@.*'
-    insertafter: '^\*.\*\s+@.*'
+- name: common log
+  copy:
+    content: |
+      *.*                           @{{ syslog_server }}
+    dest: /usr/local/etc/syslog.d/centrallog
   notify: restart BSD syslogd
 
 - name: console.log
