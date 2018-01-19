@@ -37,5 +37,5 @@
       address {{ inventory_hostname }}
     force: no
   delegate_to: '{{ munin_host }}'
-  when: munin_host
+  when: munin_host != ""
 
