@@ -9,7 +9,6 @@
     - git
     - ntp
     - ldap-utils
-    - munin-node
     - '{{ pkgs }}'
     - '{{ role_pkgs }}'
     - '{{ host_pkgs }}'

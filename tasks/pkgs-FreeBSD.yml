@@ -27,7 +27,6 @@
     - tmux
     - vim-lite
     - '{{ root_shell | basename }}'
-    - munin-node
     - openldap-sasl-client
     - '{{ pkgs }}'
     - '{{ role_pkgs }}'

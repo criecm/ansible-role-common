@@ -12,7 +12,6 @@
     - mtr--
     - '{{ root_shell | basename }}'
     - openldap-client
-    - munin-node
     - '{{ host_pkgs }}'
     - '{{ role_pkgs }}'
     - '{{ pkgs }}'

@@ -4,5 +4,3 @@ mailaliases: /etc/mail/aliases
 prefix: /usr/local
 ntp_service: ntpd
 ntp_config: ntpd.conf
-munin_etcdir: /etc/munin
-munin_service: munin_node

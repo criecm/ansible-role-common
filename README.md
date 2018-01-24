@@ -48,13 +48,9 @@
       * `umask` ('0022')
       * `update` (False)
       * `version` (master)
-  * `munin_servers` ([])
-    Ip's of munin master node(s). Will trigger munin-node install
-    and allow these IP addresses on client
-  * `munin_host` ('')
-    Munin host for ansible to declare each hosts in ...
-  * `munin_host_dir` ('/etc/munin/munin-conf.d')
-    A simple host declaration will be added in there (eg: /etc/munin/munin-conf.d) on `munin_host`
+  * `munin_host` ('') — and other variables in criecm.munin role
+    Munin master host (from inventory)
+    If not empty, will trigger criecm.munin role for master and/or nodes
   * `ocsinventory_server` ('')
     If present, install and configure openinventory-agent
   * `root_shell` (zsh)

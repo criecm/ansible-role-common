@@ -64,9 +64,10 @@
   tags: snmpd
 
 # munin config
-- name: munin node
-  include_tasks: munin.yml
-  when: munin_servers | count() > 0 and not is_vm and not is_jail and do_sysadm
+- name: munin
+  include_role:
+    name: criecm.munin
+  when: munin_host != '' and munin_servers | count() > 0 and not is_jail and do_sysadm
   tags: munin
 
 # ldap TLS client config
