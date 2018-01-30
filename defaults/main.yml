@@ -54,9 +54,9 @@ mailaliases: /etc/aliases
 rootmailto: 
 
 # x509 CA certificate
-x509_ca_file:
+x509_ca_file: ''
 
-# ans its place on filesystem
+# and its place on filesystem
 x509_ca_path: /etc/ssl/ca.crt
 
 # value for TLS_REQCERT in ldap.conf (and others)
@@ -139,8 +139,8 @@ role_gits: []
 git_ssh_key:
 
 # serveur ocsinventory
-ocsinventory_server:
-ocsinventory_tag:
+ocsinventory_server: ''
+ocsinventory_tag: ''
 
 # munin
 munin_host: ''
@@ -148,3 +148,6 @@ munin_host: ''
 # NUT
 nut_monitor:
 nut_mode: netclient
+
+# crons
+crons: []
