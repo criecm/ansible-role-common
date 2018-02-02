@@ -23,6 +23,7 @@
     command: cat /etc/timezone
     register: zoneinfo
     changed_when: False
+    check_mode: False
     ignore_errors: True
   - name: set timezone
     command: 'echo {{ host_timezone }} > /etc/timezone'
