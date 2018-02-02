@@ -97,11 +97,11 @@
 # crons
 - name: crons
   cron: '{{ cron }}'
-  with_items: '{{ crons }}'
+  with_items: '{{ crons | union(host_crons) | union(role_crons) }}'
   loop_control:
     loop_var: cron
   tags: crons
-  when: crons | count > 0 and do_sysadm
+  when: crons | union(host_crons) | union(role_crons) | count > 0 and do_sysadm
 
 # mailrelay
 - name: mailrelay

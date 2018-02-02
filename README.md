@@ -48,6 +48,8 @@
       * `umask` ('0022')
       * `update` (False)
       * `version` (master)
+  * `crons`,`host_crons`,`role_crons`:
+    list of dicts for cron module
   * `munin_host` ('') — and other variables in criecm.munin role
     Munin master host (from inventory)
     If not empty, will trigger criecm.munin role for master and/or nodes
