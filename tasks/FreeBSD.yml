@@ -39,6 +39,10 @@
 
 # hardening freebsd
 - block:
+  - name: newsyslog.conf.d
+    file:
+      dest: /usr/local/etc/newsyslog.conf.d
+      state: directory
   - name: rc.conf
     lineinfile:
       dest: /etc/rc.conf
@@ -46,7 +50,7 @@
       line: '{{item.line}}'
     with_items:
       - { regexp: '^clear_tmp_enable=', line: 'clear_tmp_enable="YES"' }
-  - name:
+  - name: sysctl's
     lineinfile:
       dest: /etc/sysctl.conf
       regexp: '{{item.regexp}}'

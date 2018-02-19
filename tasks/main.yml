@@ -9,6 +9,15 @@
     loop_var: includefile
   tags: vars
 
+- name: resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    mode: '0644'
+  tags: resolver
+  when: not is_jail and do_sysadm
+
 - include_tasks: '{{ includefile }}'
   with_first_found:
     - files:
@@ -18,15 +27,6 @@
     loop_var: includefile
   when: do_sysadm
   tags: vars
-
-- name: resolv.conf
-  template:
-    src: resolv.conf.j2
-    dest: /etc/resolv.conf
-    owner: root
-    mode: '0644'
-  tags: resolver
-  when: not is_jail and do_sysadm
 
 # pkgs
 - name: install packages

@@ -66,7 +66,7 @@ ldap_tls_reqcert: never
 is_resolver: False
 
 # specific FreeBSD repo
-pkg_repo_conf: pkgecm.conf
+pkg_repo_conf: ''
 
 # nameserver
 #  network: restrict host ip ('0.0.0.0/0'=all)
