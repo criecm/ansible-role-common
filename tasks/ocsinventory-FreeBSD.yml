@@ -3,7 +3,7 @@
 - block:
   - name: install ocsinventory-agent
     pkgng:
-      name: Ocsinventory-Unix-Agent
+      name: Ocsinventory-unix-agent
       state: present
   - file:
       dest: /usr/local/etc/ocsinventory

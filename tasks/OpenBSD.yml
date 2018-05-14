@@ -4,6 +4,7 @@
   shell: 'sysctl -n hw.vendor | grep -q "QEMU"'
   register: vm_status
   changed_when: False
+  check_mode: False
   failed_when: False
 
 - name: register is_vm

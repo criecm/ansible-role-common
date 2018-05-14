@@ -14,7 +14,7 @@
 - name: installe debconf-utils
   apt:
     name: debconf-utils
-    state: installed
+    state: present
   tags: baseconf, pkg
 
 # timezone
