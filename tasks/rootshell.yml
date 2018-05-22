@@ -1,6 +1,6 @@
 ---
 - name: get shell path
-  command: 'which {{ root_shell }}'
+  shell: 'env PATH=/bin:/usr/bin:/usr/local/bin which {{ root_shell }}'
   changed_when: False
   check_mode: False
   register: shellpath
