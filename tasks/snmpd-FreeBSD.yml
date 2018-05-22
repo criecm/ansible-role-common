@@ -7,7 +7,7 @@
     dest: /etc/snmpd.config
   with_items:
     - { line: 'begemotSnmpdModulePath."ucd" = "/usr/local/lib/snmp_ucd.so"', regexp: '^begemotSnmpdModulePath.*snmp_ucd' }
-# bug cpu snmp hostres
+# bug cpu snmp hostres (freebsd < 11.2 ou < 10.5)
 #    - { line: 'begemotSnmpdModulePath."hostres" = "/usr/lib/snmp_hostres.so"', regexp: '^begemotSnmpdModulePath.*snmp_hostres' }
   notify: restart bsnmpd
 
