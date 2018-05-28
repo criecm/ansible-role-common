@@ -6,7 +6,10 @@
 do_sysadm: True
 # if False, disable security-related too
 do_ssi: True
-#
+
+# write resolv.conf
+do_resolvconf: True
+
 # basedn LDAP
 ldap_base:
 # URI LDAP

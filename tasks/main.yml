@@ -16,7 +16,7 @@
     owner: root
     mode: '0644'
   tags: resolver
-  when: not is_jail and do_sysadm
+  when: not is_jail and do_sysadm and do_resolvconf
 
 - include_tasks: '{{ includefile }}'
   with_first_found:
