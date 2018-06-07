@@ -10,6 +10,7 @@
 - name: register is_jail
   set_fact:
     is_jail: True
+    cacheable: yes
   when: jail_status.rc == 0 and jail_status.stdout == "1"
 
 - name: get vm guest status
@@ -22,6 +23,7 @@
 - name: register is_vm
   set_fact:
     is_vm: True
+    cacheable: yes
   when: ( vm_status.rc == 0 and vm_status.stdout != "none" ) or (jail_status.rc == 0 and jail_status.stdout == "1")
 
 # timezone

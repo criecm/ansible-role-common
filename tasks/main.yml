@@ -142,6 +142,7 @@
 - name: export mailrelay var
   set_fact:
     mailrelay: '{{ mailrelay }}'
+    cacheable: yes
   tags: vars,mailrelay
 
 # NUT (Network Ups Tools)

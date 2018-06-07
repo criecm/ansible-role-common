@@ -10,6 +10,7 @@
 - name: register is_vm
   set_fact:
     is_vm: True
+    cacheable: yes
   when: vm_status.rc == 0
 
 # timezone
