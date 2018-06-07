@@ -3,9 +3,10 @@
   lineinfile:
     dest: /etc/syslog.conf
     insertbefore: '^!'
-    regexp: '^[^#]+@.*'
+    regexp: '^[^#]+notice.*@.*'
     line: '*.notice;cron,ftp,kern,lpr,mail,user.none	@{{ syslog_server }}'
   notify: restart BSD syslogd
+
 - name: syslog central / auth
   lineinfile:
     dest: /etc/syslog.conf
