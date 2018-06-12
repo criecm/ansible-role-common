@@ -43,6 +43,30 @@
     when: zoneinfo.stdout != host_timezone and do_sysadm
   tags: timezone
 
+# cap_mkdb & pwd_mkdb
+- block:
+  - name: get login.conf stats
+    stat:
+      path: '{{ item }}'
+    register: statloginconf
+    with_items:
+      - /etc/login.conf
+      - /etc/login.conf.db
+  - name: cap_mkdb
+    command: 'cap_mkdb /etc/login.conf'
+    when: statloginconf.results[0].stat.mtime > statloginconf.results[1].stat.mtime
+  - name: get master.passwd stats
+    stat:
+      path: '{{ item }}'
+    register: statpwd
+    with_items:
+      - /etc/master.passwd
+      - /etc/pwd.db
+  - name: pwd_mkdb
+    command: 'pwd_mkdb /etc/master.passwd'
+    when: statpwd.results[0].stat.mtime > statpwd.results[1].stat.mtime
+  tags: vars, sanity
+
 # hardening freebsd
 - block:
   - name: newsyslog.conf.d
