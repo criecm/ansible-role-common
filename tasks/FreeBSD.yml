@@ -6,12 +6,14 @@
   check_mode: False
   changed_when: False
   register: jail_status
+  tags: vars
 
 - name: register is_jail
   set_fact:
     is_jail: True
     cacheable: yes
   when: jail_status.rc == 0 and jail_status.stdout == "1"
+  tags: vars
 
 - name: get vm guest status
   command: 'sysctl -n kern.vm_guest'
@@ -19,12 +21,14 @@
   check_mode: False
   changed_when: False
   register: vm_status
+  tags: vars
 
 - name: register is_vm
   set_fact:
     is_vm: True
     cacheable: yes
   when: ( vm_status.rc == 0 and vm_status.stdout != "none" ) or (jail_status.rc == 0 and jail_status.stdout == "1")
+  tags: vars
 
 # timezone
 - block:

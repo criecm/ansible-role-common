@@ -6,12 +6,14 @@
   changed_when: False
   check_mode: False
   failed_when: False
+  tags: vars
 
 - name: register is_vm
   set_fact:
     is_vm: True
     cacheable: yes
   when: vm_status.rc == 0
+  tags: vars
 
 # timezone
 - name: timezone

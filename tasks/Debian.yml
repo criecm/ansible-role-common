@@ -5,12 +5,14 @@
   check_mode: False
   changed_when: False
   register: vm_status
+  tags: vars
 
 - name: register is_vm
   set_fact:
     is_vm: True
     cacheable: yes
   when: vm_status.rc == 0
+  tags: vars
 
 - name: installe debconf-utils
   apt:
