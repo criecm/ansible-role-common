@@ -1,12 +1,19 @@
 ---
+- name: gits group
+  group:
+    name: '{{ gits_group }}'
+    state: present
+  when: gits_group | default('') != '' and gits_root != '/root'
+
 - name: gits
   file:
     path: '{{ gits_root }}'
     state: directory
-    mode: '0750'
+    mode: '{{ gits_mode | default("0750") }}'
     owner: root
-    group: 0
-  when: 'gits_root != "/root"'
+    group: '{{ gits_group | default(omit) }}'
+  when: gits_root != '/root'
+
 - name: cle ssh depoiement
   copy:
     dest: '/root/.ssh/{{ git_ssh_key }}'
