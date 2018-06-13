@@ -40,6 +40,10 @@
     mail to forward root's mail
   * `gits_root` ('/root')
     path for relative path in `gits`
+  * `gits_group ('')`
+    group to own gits_root
+  * `gits_mode ('0750')`
+    dir mode for gits_root
   * `gits`, `host_gits` and `role_gits` ([])
     lists of dicts: each MUST have at least
       * `repo`: git url to clone there
