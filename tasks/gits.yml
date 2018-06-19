@@ -22,6 +22,7 @@
     group: 0
     mode: '0600'
   when: 'git_ssh_key != ""'
+
 - name: repos git gits
   git:
     dest: '{{ gits_root }}/{{ item.dest }}'
@@ -35,5 +36,5 @@
     - '{{ gits }}'
     - '{{ host_gits }}'
     - '{{ role_gits }}'
-
+  when: git_ssh_key != ""
 
