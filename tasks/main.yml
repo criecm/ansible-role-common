@@ -9,6 +9,12 @@
     loop_var: includefile
   tags: vars
 
+- debug:
+    var: ansible_local
+
+- set_fact:
+    do_sys: '{% if "criecm" in ansible_local and ansible_local.criecm.common.version | default(0) >= common_version %}no{% else %}{{ do_sysadm }}{% endif %}'
+
 - name: resolv.conf
   template:
     src: resolv.conf.j2
@@ -16,7 +22,12 @@
     owner: root
     mode: '0644'
   tags: resolver
-  when: not is_jail and do_sysadm and do_resolvconf
+  when: not is_jail and do_sys and do_resolvconf
+
+- name: facts.d
+  file:
+    path: '{{ etcprefix }}/etc/ansible/facts.d'
+    state: directory
 
 - include_tasks: '{{ includefile }}'
   with_first_found:
@@ -25,19 +36,19 @@
       skip: True
   loop_control:
     loop_var: includefile
-  when: do_sysadm
+  when: do_sys
   tags: vars
 
 # pkgs
 - name: install packages
   include_tasks: 'pkgs-{{ ansible_os_family }}.yml'
   tags: pkg
-  when: do_sysadm
+  when: do_sys
 
 # ntp
 - name: config ntpd
   include_tasks: ntpd.yml
-  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm and do_sysadm'
+  when: 'ntp_servers or ntp_pools and not is_jail and not is_vm and do_sys'
   tags: ntp
 
 # x509
@@ -69,51 +80,51 @@
   - name: update-ca-certificates
     command: '/usr/sbin/update-ca-certificates'
     when: certline.changed | default(False)
-  when: x509_ca_file != '' and do_sysadm
+  when: x509_ca_file != '' and do_sys
   tags: x509
 
 # syslog
 - name: syslog client
   include_tasks: 'syslog-{{ ansible_os_family }}.yml'
-  when: syslog_server != '' and not is_syslogd and do_sysadm
+  when: syslog_server != '' and not is_syslogd and do_sys
   tags: syslog
 
 # snmp (missing Debian and OpenBSD)
 - name: snmp server
   include_tasks: 'snmpd-{{ ansible_os_family }}.yml'
-  when: not is_jail and not is_vm and do_sysadm and do_snmp
+  when: not is_jail and not is_vm and do_sys and do_snmp
   tags: snmpd
 
 # munin config
 - name: munin
   include_role:
     name: criecm.munin
-  when: munin_host != '' and munin_servers | count() > 0 and not is_jail and do_sysadm
+  when: munin_host != '' and munin_servers | count() > 0 and not is_jail and do_sys
   tags: munin
 
 # ldap TLS client config
 - name: ldap client
   include_tasks: ldap.yml
-  when: ldap_base != "" and ldap_uri != "" and x509_ca_path != "" and do_sysadm
+  when: ldap_base != "" and ldap_uri != "" and x509_ca_path != "" and do_sys
   tags: ldap
 
 # sshd config and keys
 # root ssh access and authorized_keys
 - include_tasks: sshd.yml
-  when: do_sysadm
+  when: do_sys
   tags: sshd
 
 # root shell config
 - name: root shell
   include_tasks: rootshell.yml
-  when: 'root_shell != "" and do_sysadm'
+  when: 'root_shell != "" and do_sys'
   tags: rootshell
 
 # gits helper
 - name: gits
   include_tasks: gits.yml
   tags: gits
-  when: 'gits | union(host_gits) | union(role_gits) | count() > 0 and do_sysadm'
+  when: 'gits | union(host_gits) | union(role_gits) | count() > 0 and do_sys'
 
 # crons
 - name: crons
@@ -133,12 +144,12 @@
   loop_control:
     loop_var: cron
   tags: crons
-  when: crons | union(host_crons) | union(role_crons) | count > 0 and do_sysadm
+  when: crons | union(host_crons) | union(role_crons) | count > 0 and do_sys
 
 # mailrelay
 - name: mailrelay
   include_tasks: 'mailrelay-{{ ansible_os_family }}.yml'
-  when: 'mailrelay != "" and not is_mailrelay and do_sysadm'
+  when: 'mailrelay != "" and not is_mailrelay and do_sys'
   tags: mailrelay
 
 - name: alias mail root
@@ -147,7 +158,7 @@
     line: "root: {{rootmailto}}"
     regexp: '^root:'
   notify: newaliases
-  when: rootmailto != '' and do_sysadm
+  when: rootmailto != '' and do_sys
   tags: mailclient
 
 - name: export mailrelay var
@@ -159,11 +170,23 @@
 # NUT (Network Ups Tools)
 - name: Network Ups Tools
   include_tasks: 'mailrelay-{{ ansible_os_family }}.yml'
-  when: 'nut_monitor != "" and not is_vm and not is_jail and do_sysadm'
+  when: 'nut_monitor != "" and not is_vm and not is_jail and do_sys'
   tags: nut
 
 # ocsinventory agent
 - name: ocsinventory agent
   include_tasks: 'ocsinventory-{{ ansible_os_family }}.yml'
-  when: ocsinventory_server != "" and not is_jail and not is_vm and do_sysadm
+  when: ocsinventory_server != "" and not is_jail and not is_vm and do_sys
   tags: ocsinventory
+
+- name: fact done
+  blockinfile:
+    path: '{{ etcprefix }}/etc/ansible/facts.d/criecm.fact'
+    marker: '# {mark} ANSIBLE criecm.common BLOCK'
+    block: |
+      [common]
+      version={{ common_version }}
+      is_jail={{ is_jail }}
+      is_vm={{ is_vm }}
+    create: yes
+  when: do_sys

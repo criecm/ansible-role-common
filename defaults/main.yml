@@ -110,6 +110,9 @@ syslog_auth_server: '{{ syslog_server }}'
 # for syslog SERVER
 is_syslogd: False
 
+# snmpd
+do_snmp: False
+
 # default sshd lines
 #ex:  - { line: 'PermitUserEnvironment yes', regexp: '^PermitUserEnvironment', insertafter: '^#[[:space:]]*PermitUserEnvironment' }
 default_sshd_lines: []
@@ -156,3 +159,5 @@ nut_mode: netclient
 crons: []
 host_crons: []
 role_crons: []
+
+common_version: 2

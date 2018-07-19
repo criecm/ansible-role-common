@@ -67,6 +67,15 @@
     when: statpwd.results[0].stat.mtime > statpwd.results[1].stat.mtime
   tags: vars, sanity
 
+- name: freebsd workaround pyXX-ansible
+  file:
+    src: '{{ etcprefix }}/etc/ansible'
+    dest: '{{ etcprefix }}/etc/py{{ item }}-ansible'
+    state: link
+  with_items:
+    - 27
+    - 36
+
 # hardening freebsd
 - block:
   - name: newsyslog.conf.d
