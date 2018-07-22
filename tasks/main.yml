@@ -13,7 +13,7 @@
     var: ansible_local
 
 - set_fact:
-    do_sys: '{% if "criecm" in ansible_local and ansible_local.criecm.common.version | default(0) >= common_version %}no{% else %}{{ do_sysadm }}{% endif %}'
+    do_sys: '{% if "criecm" in ansible_local and ansible_local.criecm.common.version | default(0) >= common_version and not do_sysadm %}no{% else %}yes{% endif %}'
 
 - name: resolv.conf
   template:

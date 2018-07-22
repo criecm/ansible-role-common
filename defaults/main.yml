@@ -3,7 +3,7 @@
 # http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence
 #
 # allow disabling most actions, keeping vars
-do_sysadm: True
+do_sysadm: False
 # if False, disable security-related too
 do_ssi: True
 
