@@ -5,13 +5,14 @@ galaxy_info:
 
   license: BSD
 
-  min_ansible_version: 2.4
+  min_ansible_version: 2.5
 
   platforms:
     - name: FreeBSD
       versions:
         - 11.1
-        - 10.3
+        - 11.2
+        - 10.4
     - name: OpenBSD
       versions:
         - 6.2
