@@ -3,7 +3,7 @@
   group:
     name: '{{ gits_group }}'
     state: present
-  when: gits_group | default('') != '' and gits_root != '/root'
+  when: gits_group | default(False) and gits_root != '/root'
 
 - name: gits
   file:

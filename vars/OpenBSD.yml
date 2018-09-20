@@ -4,3 +4,4 @@ mailaliases: /etc/mail/aliases
 prefix: /usr/local
 ntp_service: ntpd
 ntp_config: ntpd.conf
+smartd_service: smartd

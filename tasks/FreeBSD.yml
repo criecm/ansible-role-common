@@ -76,6 +76,32 @@
     - 27
     - 36
 
+# list disks
+#- name: list disks
+#  shell: |
+#    geom disk list | awk '{if(/^[0-9]/){dsk=$3;}if(/fwsectors: [1-9]/){dsks[dsk]=dsk;}}END{for(k in dsks) {print dsks[k]}}' | while read p; do ( smartctl -a /dev/$p >/dev/null || [ $p = \"mfisyspd0\" ] ) && echo $p; done
+#  changed_when: False
+#  check_mode: False
+#  register: lsdisks
+#  failed_when: false
+
+- name: list disks
+  block:
+    - name: is mfi ?
+      command: 'mfiutil show drives'
+      ignore_errors: true
+      register: has_mfi
+    - lineinfile:
+        dest: /boot/loader.conf
+        line: 'mfip_load="YES"'
+        regexp: '^mfip_load='
+      register: loadrc
+      when: has_mfi.rc == 0
+    - command: 'kldload mfip'
+      ignore_errors: True
+      when: has_mfi.rc == 0 and loadrc.changed
+  when: do_smartd
+
 # hardening freebsd
 - block:
   - name: newsyslog.conf.d

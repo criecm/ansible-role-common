@@ -9,9 +9,6 @@
     loop_var: includefile
   tags: vars
 
-- debug:
-    var: ansible_local
-
 - name: get date
   command: 'date +%s'
   register: now
@@ -19,7 +16,8 @@
   check_mode: False
 
 - set_fact:
-    do_sys: '{% if "criecm" in ansible_local and ansible_local.criecm.common.version | default(0) | int >= common_version or ansible_local.criecm.common.last | default(0) >= now.stdout | int - 86400 and not do_sysadm %}no{% else %}yes{% endif %}'
+    do_sys: '{% if "criecm" in ansible_local and ( ansible_local.criecm.common.version | default(0) | int >= common_version or ansible_local.criecm.common.last | default(0) >= now.stdout | int - 86400 ) and not do_sysadm %}no{% else %}yes{% endif %}'
+    do_smartd: '{% if is_jail or is_vm or not do_smart %}False{% else %}True{% endif %}'
   tags: vars
 
 - name: resolv.conf
@@ -28,6 +26,7 @@
     dest: /etc/resolv.conf
     owner: root
     mode: '0644'
+    backup: yes
   tags: resolver
   when: not is_jail and do_sys and do_resolvconf
 
@@ -50,13 +49,41 @@
 - name: install packages
   include_tasks: 'pkgs-{{ ansible_os_family }}.yml'
   tags: pkg
-  when: do_sys
 
 # ntp
 - name: config ntpd
   include_tasks: ntpd.yml
   when: 'ntp_servers or ntp_pools and not is_jail and not is_vm and do_sys'
   tags: ntp
+
+# smartd
+- name:- shell: |
+    smartctl --scan-open | cut -d' ' -f1 | cut -d/ -f 3 | while read p; do smartctl -a /dev/$p >/dev/null && echo $p; done
+  register: lsdisks
+  ignore_errors: true
+  tags: smartd
+- set_fact:
+    disks: '{{ lsdisks.stdout_lines | default([]) }}'
+    cacheable: true
+  when: do_smartd
+  tags: smartd
+
+ smartd
+  block:
+    - command: 'grep ^/ {{ etcprefix }}/etc/smartd.conf'
+      ignore_errors: yes
+      register: smarted
+    - template:
+        src: smartd.conf.j2
+        dest: '{{ etcprefix }}/etc/smartd.conf'
+        force: '{% if smarted.rc == 0 %}no{% else %}yes{% endif %}'
+      notify: restart smartd
+    - service:
+        name: '{{ smartd_service }}'
+        state: started
+        enabled: true
+  when: not is_jail and not is_vm and do_sys and do_smartd and disks | count > 0
+  tag: smartd
 
 # x509
 - block:
@@ -195,5 +222,6 @@
       version={{ common_version }}
       is_jail={{ is_jail }}
       is_vm={{ is_vm }}
+      last={{ now.stdout }}
     create: yes
   when: do_sys

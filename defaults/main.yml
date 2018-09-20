@@ -160,4 +160,6 @@ crons: []
 host_crons: []
 role_crons: []
 
-common_version: 2
+common_version: 3
+
+do_smart: True

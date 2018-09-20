@@ -62,6 +62,10 @@
   * `root_shell` (zsh)
     Set your preferred one here :) (or set it empty to skip all this)
     put your rc file in {{ playbook_dir }}/files/{{ root_shell }}rc
+  * `do_smart (True if not jail/vm)`
+    configure smartd for disks alerts
+  * `smart_mailto ('')`
+    Here comes your email address if you wish to receive alerts by mail
 
 ### FreeBSD specific
 

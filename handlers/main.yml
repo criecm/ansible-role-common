@@ -43,3 +43,8 @@
   file:
     path: /var/log/console.log
     state: touch
+
+- name: restart smartd
+  service:
+    name: '{{ smartd_service }}'
+    state: restarted
