@@ -20,6 +20,8 @@
     do_smartd: '{% if is_jail or is_vm or not do_smart %}False{% else %}True{% endif %}'
   tags: vars
 
+- debug: var=do_sys
+
 - name: resolv.conf
   template:
     src: resolv.conf.j2
@@ -62,6 +64,7 @@
     smartctl --scan-open | cut -d' ' -f1 | cut -d/ -f 3 | while read p; do smartctl -a /dev/$p >/dev/null && echo $p; done
   register: lsdisks
   ignore_errors: true
+  changed_when: false
   tags: smartd
 - set_fact:
     disks: '{{ lsdisks.stdout_lines | default([]) }}'
