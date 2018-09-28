@@ -35,6 +35,7 @@
   with_items: 
     - '{{ gits }}'
     - '{{ host_gits }}'
+    - '{{ group_gits }}'
     - '{{ role_gits }}'
   when: git_ssh_key != ""
   check_mode: True
