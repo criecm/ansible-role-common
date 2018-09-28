@@ -61,7 +61,7 @@
 # smartd
 - name: lsdisks
   shell: |
-    smartctl --scan-open | cut -d' ' -f1 | cut -d/ -f 3 | while read p; do smartctl -a /dev/$p >/dev/null && echo $p; done
+    smartctl --scan-open | awk '/^\// {gsub("#.*$",""); args=""; dev=$1; for(i=2;i<=NF;i++){args=args" "$i;}printf("smartctl -a %s %s > /dev/null && echo %s %s\n",dev,args,dev,args);}' | sh
   register: lsdisks
   ignore_errors: true
   changed_when: false
