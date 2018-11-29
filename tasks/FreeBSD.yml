@@ -90,6 +90,7 @@
     - name: is mfi ?
       command: 'mfiutil show drives'
       ignore_errors: true
+      check_mode: False
       register: has_mfi
     - lineinfile:
         dest: /boot/loader.conf
