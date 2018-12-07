@@ -100,8 +100,8 @@
   block:
     - name: Installe CA local
       copy:
-        src: '{{x509_ca_file}}'
-        dest: '{{x509_ca_path}}'
+        src: '{{ x509_ca_file }}'
+        dest: '{{ x509_ca_path }}'
         owner: root
         group: 0
         mode: '0644'
@@ -112,7 +112,7 @@
       when: ansible_os_family == "Debian"
     - name: register local CA (debian)
       copy:
-        src: '{{x509_ca_file}}'
+        src: '{{ x509_ca_file }}'
         dest: /usr/share/ca-certificates/local/local.crt
       register: accopied
       when: ansible_os_family == "Debian"

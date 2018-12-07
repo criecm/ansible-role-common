@@ -25,7 +25,7 @@
     dest: /etc/ssh/sshd_config
     regexp: "{{ item.regexp | default('^'+item.line | regex_replace(' .*$','')) }}"
     line: "{{ item.line}}"
-    insertafter: "{{item.insertafter | default(item.line | regex_replace(' .*$','')) }}"
+    insertafter: "{{ item.insertafter | default(item.line | regex_replace(' .*$','')) }}"
     state: present
     validate: '/usr/sbin/sshd -tf %s'
   notify: restart sshd

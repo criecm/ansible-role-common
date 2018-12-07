@@ -8,7 +8,7 @@ search{% for sd in search_domains %}{% if ansible_all_ipv4_addresses | union(ans
 {% endif %}
 {% for ns in resolvers %}
 {% if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ipaddr(ns.network) %}
-nameserver {{ns.ip}}
+nameserver {{ ns.ip }}
 {% endif %}
 {% endfor %}
 
