@@ -26,5 +26,3 @@
     - '{{ playbook_dir }}/files/{{ root_shell | basename }}rc'
     - '{{ root_shell | basename }}rc.j2'
     - skip: True
-
-

@@ -3,7 +3,7 @@
 - name: mailrelay
   lineinfile:
     dest: /etc/mail/freebsd.submit.mc
-    line: "FEATURE(`msp', `[{{mailrelay}}]')"
+    line: "FEATURE(`msp', `[{{ mailrelay }}]')"
     regexp: '^FEATURE\(.?msp'
   register: domailrelay
 
@@ -23,7 +23,4 @@
       dest: /etc/rc.conf
       line: 'sendmail_submit_enable="NO"'
       regexp: '^sendmail_submit_enable='
-
   when: domailrelay.changed == True
-
-

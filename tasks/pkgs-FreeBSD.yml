@@ -33,5 +33,3 @@
     state: present
   when: not is_jail and not is_vm and do_sysadm
   tags: pkgs
-
-

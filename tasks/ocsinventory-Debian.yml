@@ -26,5 +26,3 @@
     command: '/usr/bin/ocsinventory-agent'
     failed_when: False
     changed_when: False
-
-

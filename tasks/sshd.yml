@@ -55,5 +55,3 @@
     state: absent
   with_fileglob:
     - cles_ssh/*.del
-
-

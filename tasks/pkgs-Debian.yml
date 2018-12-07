@@ -5,5 +5,3 @@
     name: '{{ debian_base_pkgs + role_pkgs + host_pkgs + pkgs }}'
     state: present
   tags: pkgs
-
-

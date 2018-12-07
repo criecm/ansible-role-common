@@ -21,5 +21,3 @@
     dest: /etc/periodic.conf
     create: True
   when: ansible_os_family == 'FreeBSD'
-
-

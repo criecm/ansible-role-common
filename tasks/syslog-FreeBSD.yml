@@ -1,6 +1,5 @@
 ---
 # syslog
-
 - name: mkdir
   file:
     dest: /usr/local/etc/syslog.d
@@ -37,5 +36,3 @@
 - name: set syslogd_flags
   command: 'sysrc syslogd_flags="-c -s"'
   when: sysrc_syslogd_flags.rc > 0
-
-

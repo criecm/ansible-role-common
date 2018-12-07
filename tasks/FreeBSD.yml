@@ -112,18 +112,17 @@
   - name: rc.conf
     lineinfile:
       dest: /etc/rc.conf
-      regexp: '{{item.regexp}}'
-      line: '{{item.line}}'
+      regexp: '{{ item.regexp }}'
+      line: '{{ item.line }}'
     with_items:
       - { regexp: '^clear_tmp_enable=', line: 'clear_tmp_enable="YES"' }
   - name: sysctl's
     lineinfile:
       dest: /etc/sysctl.conf
-      regexp: '{{item.regexp}}'
-      line: '{{item.line}}'
+      regexp: '{{ item.regexp }}'
+      line: '{{ item.line }}'
     with_items:
       - { regexp: '^security.bsd.see_other_uids=', line: 'security.bsd.see_other_uids=0' }
     when: 'freebsd_allow_see_other | default(False)'
   tags: baseconf, security
   when: do_sysadm or do_ssi
-

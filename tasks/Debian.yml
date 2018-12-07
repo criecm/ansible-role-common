@@ -48,7 +48,6 @@
   notify: debian regen locales
   tags: locales
   when: do_sysadm
-
 ## list disks
 #- name: list disks
 #  shell: "lsblk | awk '{if($6~/^disk$/){print $1;}}'"

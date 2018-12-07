@@ -6,5 +6,3 @@
   environment:
     PKG_PATH: "{{ openbsd_pkg_mirror }}/pub/OpenBSD/{{ ansible_distribution_release }}/packages/{{ ansible_architecture }}/"
   tags: baseconf, pkg
-
-

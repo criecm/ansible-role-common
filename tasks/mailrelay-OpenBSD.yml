@@ -3,8 +3,6 @@
 - name: mailrelay
   lineinfile:
     dest: /etc/mail/smtpd.conf
-    line: 'accept from local for any relay via {{mailrelay}}'
+    line: 'accept from local for any relay via {{ mailrelay }}'
     regexp: '^accept .*for any relay'
   notify: restart smtpd
-
-

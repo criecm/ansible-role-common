@@ -14,4 +14,3 @@
     regexp: '^auth.*@.*'
     line: 'auth.info;authpriv.info					@{{ syslog_auth_server | default(syslog_server) }}'
   notify: restart BSD syslogd
-

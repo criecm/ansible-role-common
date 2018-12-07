@@ -192,8 +192,8 @@
 
 - name: alias mail root
   lineinfile:
-    dest: "{{mailaliases}}"
-    line: "root: {{rootmailto}}"
+    dest: "{{ mailaliases }}"
+    line: "root: {{ rootmailto }}"
     regexp: '^root:'
   notify: newaliases
   when: rootmailto != '' and do_sys

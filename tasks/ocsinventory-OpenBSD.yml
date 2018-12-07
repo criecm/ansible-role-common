@@ -53,5 +53,3 @@
   - name: run ocsinventory-agent
     shell: '/usr/local/bin/ocsinventory-agent'
     changed_when: False
-
-

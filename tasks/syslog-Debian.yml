@@ -5,5 +5,3 @@
     dest: /etc/rsyslog.d/ecm.conf
     mode: 600
   notify: restart Debian rsyslog
-
-
