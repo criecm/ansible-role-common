@@ -9,17 +9,16 @@
 - block:
   - name: dependencies
     openbsd_pkg:
-      name: '{{ item }}'
+      name:
+        - nmap
+        - pciutils
+        - p5-libwww
+        - p5-XML-Simple
+        - p5-Net-IP
+        - p5-Proc-Daemon
+        - p5-LWP-Protocol-https
+#        - dmidecode
       state: present
-    with_items:
-      - nmap
-  #    - dmidecode
-      - pciutils
-      - p5-libwww
-      - p5-XML-Simple
-      - p5-Net-IP
-      - p5-Proc-Daemon
-      - p5-LWP-Protocol-https
   - name: get
     get_url:
       url: 'https://github.com/OCSInventory-NG/UnixAgent/releases/download/2.3/Ocsinventory-Unix-Agent-2.3.tar.gz'
