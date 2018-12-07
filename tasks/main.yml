@@ -125,13 +125,13 @@
     - name: update-ca-certificates
       command: '/usr/sbin/update-ca-certificates'
       when: certline.changed | default(False)
-  when: x509_ca_file != '' and do_sys
+  when: x509_ca_file and do_sys
   tags: x509
 
 # syslog
 - name: syslog client
   include_tasks: 'syslog-{{ ansible_os_family }}.yml'
-  when: syslog_server != '' and not is_syslogd and do_sys
+  when: syslog_server and not is_syslogd and do_sys
   tags: syslog
 
 # snmp (missing Debian and OpenBSD)
@@ -144,7 +144,7 @@
 - name: munin
   include_role:
     name: criecm.munin
-  when: munin_host != '' and munin_servers | count() > 0 and not is_jail and do_sys
+  when: munin_host and munin_servers | count() > 0 and not is_jail and do_sys
   tags: munin
 
 # ldap TLS client config
@@ -203,7 +203,7 @@
     line: "root: {{ rootmailto }}"
     regexp: '^root:'
   notify: newaliases
-  when: rootmailto != '' and do_sys
+  when: rootmailto and do_sys
   tags: mailclient
 
 - name: export mailrelay var
