@@ -19,29 +19,18 @@
 # packages standard
 - name: pkgs standard
   pkgng:
-    name: '{{item}}'
+    name: '{{ freebsd_base_pkgs + host_pkgs + role_pkgs + pkgs }}'
     state: present
-  with_items:
-    - git
-    - rsync
-    - tmux
-    - vim-console
-    - '{{ root_shell | basename }}'
-    - openldap-sasl-client
-    - '{{ pkgs }}'
-    - '{{ role_pkgs }}'
-    - '{{ host_pkgs }}'
   tags: pkgs
 
 - name: pkgs pkg machine physique
   pkgng:
-    name: '{{item}}'
+    name:
+      - bsnmp-ucd
+      - dmidecode
+      - ipmitool
+      - smartmontools
     state: present
-  with_items:
-    - bsnmp-ucd
-    - dmidecode
-    - ipmitool
-    - smartmontools
   when: not is_jail and not is_vm and do_sysadm
   tags: pkgs
 

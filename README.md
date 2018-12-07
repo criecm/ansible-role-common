@@ -73,6 +73,20 @@
     name of a pkg repo config file to be installed first
   * `is_jail` (False)
     if True, will skip hardware monitoring tools (smart, ipmi, snmp, dmidecode, munin)
+  * `freebsd_base_pkgs ([git,rsync,vim-console,root_shell])`
+    list of packages to install
+
+### OpenBSD specific
+
+  * `openbsd_base_pkgs ([git,rsync,vim--no_x11,root_shell])`
+    list of packages to install
+  * `openbsd_pkg_mirror ("http://ftp.openbsd.org")`
+    mirror to use
+
+## Debian specific
+
+  * `debian_base_pkgs (git,rsync,vim,root_shell])`
+    list of packages to install
 
 ### Packages
 

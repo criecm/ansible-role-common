@@ -163,3 +163,23 @@ role_crons: []
 common_version: 3
 
 do_smart: True
+
+openbsd_pkg_mirror: http://ftp.openbsd.org
+
+freebsd_base_pkgs:
+  - git
+  - rsync
+  - vim-console
+  - '{{ root_shell | basename }}'
+
+openbsd_base_pkgs:
+  - git
+  - rsync
+  - vim--no_x11
+  - '{{ root_shell | basename }}'
+
+debian_base_pkgs:
+  - '{{ root_shell | basename }}'
+  - git
+  - ntp
+  - vim

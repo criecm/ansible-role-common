@@ -1,20 +1,10 @@
 ---
 - name: pkgs OpenBSD
   openbsd_pkg:
-    name: '{{item}}'
+    name: '{{ openbsd_base_pkgs + host_pkgs + role_pkgs + pkgs }}'
     state: present
   environment:
-    PKG_PATH: "http://ftp.fr.openbsd.org/pub/OpenBSD/{{ansible_distribution_release}}/packages/{{ansible_architecture}}/"
-  with_items:
-    - git
-    - rsync
-    - vim--no_x11
-    - mtr--
-    - '{{ root_shell | basename }}'
-    - openldap-client
-    - '{{ host_pkgs }}'
-    - '{{ role_pkgs }}'
-    - '{{ pkgs }}'
+    PKG_PATH: "{{ openbsd_pkg_mirror }}/pub/OpenBSD/{{ ansible_distribution_release }}/packages/{{ ansible_architecture }}/"
   tags: baseconf, pkg
 
 
