@@ -1,18 +1,18 @@
 ---
 # packages ecm
-- block:
-  - name: mkdir pkgrepo
-    file:
-      path: /usr/local/etc/pkg/repos
-      state: directory
-      mode: '0755'
-  
-  - name: pkg repo ecm
-    copy:
-      src: '{{ pkg_repo_conf }}'
-      dest: '/usr/local/etc/pkg/repos/{{ pkg_repo_conf | regex_replace(".*/", "") }}'
-      validate: 'pkg -vv -C %s'
-      mode: '0644'
+- name: 'pkg repo {{ pkg_repo_conf }}'
+  block:
+    - name: mkdir pkgrepo
+      file:
+        path: /usr/local/etc/pkg/repos
+        state: directory
+        mode: '0755'
+    - name: pkg repo ecm
+      copy:
+        src: '{{ pkg_repo_conf }}'
+        dest: '/usr/local/etc/pkg/repos/{{ pkg_repo_conf | regex_replace(".*/", "") }}'
+        validate: 'pkg -vv -C %s'
+        mode: '0644'
   when: pkg_repo_conf != ''
   tags: pkgs
 

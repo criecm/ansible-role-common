@@ -41,7 +41,8 @@
     path: '{{ etcprefix }}/etc/ansible/facts.d'
     state: directory
 
-- include_tasks: '{{ includefile }}'
+- name: os specific tasks
+  include_tasks: '{{ includefile }}'
   with_first_found:
     - files:
         - '{{ ansible_os_family }}.yml'
@@ -95,34 +96,35 @@
   tags: smartd
 
 # x509
-- block:
-  - name: Installe CA local
-    copy:
-      src: '{{x509_ca_file}}'
-      dest: '{{x509_ca_path}}'
-      owner: root
-      group: 0
-      mode: '0644'
-  - name: CA local (debian)
-    file:
-      dest: '/usr/share/ca-certificates/local'
-      state: directory
-    when: ansible_os_family == "Debian"
-  - name: register local CA (debian)
-    copy:
-      src: '{{x509_ca_file}}'
-      dest: /usr/share/ca-certificates/local/local.crt
-    register: accopied
-    when: ansible_os_family == "Debian"
-  - name: ca-certificates.conf
-    lineinfile:
-      line: 'local/localac.crt'
-      dest: /etc/ca-certificates.conf
-    when: accopied.changed | default(False)
-    register: certline
-  - name: update-ca-certificates
-    command: '/usr/sbin/update-ca-certificates'
-    when: certline.changed | default(False)
+- name: x509
+  block:
+    - name: Installe CA local
+      copy:
+        src: '{{x509_ca_file}}'
+        dest: '{{x509_ca_path}}'
+        owner: root
+        group: 0
+        mode: '0644'
+    - name: CA local (debian)
+      file:
+        dest: '/usr/share/ca-certificates/local'
+        state: directory
+      when: ansible_os_family == "Debian"
+    - name: register local CA (debian)
+      copy:
+        src: '{{x509_ca_file}}'
+        dest: /usr/share/ca-certificates/local/local.crt
+      register: accopied
+      when: ansible_os_family == "Debian"
+    - name: ca-certificates.conf
+      lineinfile:
+        line: 'local/localac.crt'
+        dest: /etc/ca-certificates.conf
+      when: accopied.changed | default(False)
+      register: certline
+    - name: update-ca-certificates
+      command: '/usr/sbin/update-ca-certificates'
+      when: certline.changed | default(False)
   when: x509_ca_file != '' and do_sys
   tags: x509
 

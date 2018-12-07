@@ -6,50 +6,50 @@
   register: ocsinstalled
 
 # install
-- block:
-  - name: dependencies
-    openbsd_pkg:
-      name:
-        - nmap
-        - pciutils
-        - p5-libwww
-        - p5-XML-Simple
-        - p5-Net-IP
-        - p5-Proc-Daemon
-        - p5-LWP-Protocol-https
-#        - dmidecode
-      state: present
-  - name: get
-    get_url:
-      url: 'https://github.com/OCSInventory-NG/UnixAgent/releases/download/2.3/Ocsinventory-Unix-Agent-2.3.tar.gz'
-      dest: /root/Ocsinventory-Unix-Agent-2.3.tar.gz
-  - name: extract
-    unarchive:
-      remote_src: yes
-      dest: /root
-      src: /root/Ocsinventory-Unix-Agent-2.3.tar.gz
-  - name: build
-    shell: 'PERL_AUTOINSTALL=1 perl Makefile.PL && make && echo "n" | make install'
-    args:
-      chdir: /root/Ocsinventory-Unix-Agent-2.3
-      creates: /usr/local/bin/ocsinventory-agent
+- name: install ocs
+  block:
+    - name: dependencies
+      openbsd_pkg:
+        name:
+          - nmap
+          - pciutils
+          - p5-libwww
+          - p5-XML-Simple
+          - p5-Net-IP
+          - p5-Proc-Daemon
+          - p5-LWP-Protocol-https
+          #- dmidecode
+        state: present
+    - name: get
+      get_url:
+        url: 'https://github.com/OCSInventory-NG/UnixAgent/releases/download/2.3/Ocsinventory-Unix-Agent-2.3.tar.gz'
+        dest: /root/Ocsinventory-Unix-Agent-2.3.tar.gz
+    - name: extract
+      unarchive:
+        remote_src: yes
+        dest: /root
+        src: /root/Ocsinventory-Unix-Agent-2.3.tar.gz
+    - name: build
+      shell: 'PERL_AUTOINSTALL=1 perl Makefile.PL && make && echo "n" | make install'
+      args:
+        chdir: /root/Ocsinventory-Unix-Agent-2.3
+        creates: /usr/local/bin/ocsinventory-agent
   when: not ocsinstalled.stat.exists
 
 # config ocs
-- block:
-  - name: mkdir
-    file:
-      dest: /etc/ocsinventory
-      state: directory
-  - name: config ocsinventory
-    copy:
-      dest: /etc/ocsinventory/ocsinventory-agent.cfg
-      content: |
-        server={{ ocsinventory_server }}
-        {% if ocsinventory_tag %}tag={{ ocsinventory_tag }}
-        {%endif %}
-        nosoftware=on
-        ca=/etc/ssl/cert.pem
-  - name: run ocsinventory-agent
-    shell: '/usr/local/bin/ocsinventory-agent'
-    changed_when: False
+- name: mkdir confdir
+  file:
+    dest: /etc/ocsinventory
+    state: directory
+- name: config ocsinventory
+  copy:
+    dest: /etc/ocsinventory/ocsinventory-agent.cfg
+    content: |
+      server={{ ocsinventory_server }}
+      {% if ocsinventory_tag %}tag={{ ocsinventory_tag }}
+      {%endif %}
+      nosoftware=on
+      ca=/etc/ssl/cert.pem
+- name: run ocsinventory-agent
+  shell: '/usr/local/bin/ocsinventory-agent'
+  changed_when: False

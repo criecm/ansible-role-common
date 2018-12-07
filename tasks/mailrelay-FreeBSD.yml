@@ -7,20 +7,21 @@
     regexp: '^FEATURE\(.?msp'
   register: domailrelay
 
-- block:
-  - name: stop sendmail
-    service:
-      name: sendmail
-      state: stopped
+- name:
+  block:
+    - name: stop sendmail
+      service:
+        name: sendmail
+        state: stopped
 
-  - name: config relay sendmail
-    command: /usr/bin/make install-submit-cf
-    args:
-      chdir: /etc/mail
+    - name: config relay sendmail
+      command: /usr/bin/make install-submit-cf
+      args:
+        chdir: /etc/mail
 
-  - name: no sendmail_submit
-    lineinfile:
-      dest: /etc/rc.conf
-      line: 'sendmail_submit_enable="NO"'
-      regexp: '^sendmail_submit_enable='
+    - name: no sendmail_submit
+      lineinfile:
+        dest: /etc/rc.conf
+        line: 'sendmail_submit_enable="NO"'
+        regexp: '^sendmail_submit_enable='
   when: domailrelay.changed == True

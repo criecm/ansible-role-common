@@ -7,7 +7,9 @@
       state: present
 
   # TIP: pour transformer le format debconf en liste ci-dessous:
-  # debconf-get-selections | grep ^postfix | awk '{printf("     - { name='\''%s'\'', question='\''%s'\'', vtype='\''%s'\'', value='\''%s",$1,$2,$3,$4); for(i=5;i<=NF;i++){printf(" %s",$i);} printf("'\'' }\n");}' | sed 's/$HOSTNAME/{{ansible_fqdn}}/; s/$RELAYHOST/{{mailrelay}}/;'
+  # debconf-get-selections | grep ^postfix | awk '{
+  #   printf("     - { name='\''%s'\'', question='\''%s'\'', vtype='\''%s'\'', value='\''%s",$1,$2,$3,$4);
+  #   for(i=5;i<=NF;i++){printf(" %s",$i);} printf("'\'' }\n");}' | sed 's/$HOSTNAME/{{ansible_fqdn}}/; s/$RELAYHOST/{{mailrelay}}/;'
   - name: configure postfix
     debconf:
       name: "{{ item.name }}"

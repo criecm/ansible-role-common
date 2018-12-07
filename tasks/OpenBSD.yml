@@ -1,5 +1,4 @@
 ---
-
 - name: check vm
   shell: 'sysctl -n hw.vendor | grep -q "QEMU"'
   register: vm_status
