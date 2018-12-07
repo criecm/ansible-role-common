@@ -1,6 +1,5 @@
 ---
 # config ldap globale
-
 - name: openldap config dir
   file:
     path: '{{ ldap_etcdir }}'

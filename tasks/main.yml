@@ -1,6 +1,7 @@
 ---
 # taches communes ECM
-- include_vars: '{{ includefile }}'
+- name: os vars
+  include_vars: '{{ includefile }}'
   with_first_found:
     - files:
         - '{{ ansible_os_family }}.yml'
@@ -19,8 +20,6 @@
     do_sys: '{% if "criecm" in ansible_local and ( ansible_local.criecm.common.version | default(0) | int >= common_version or ansible_local.criecm.common.last | default(0) >= now.stdout | int - 86400 ) and not do_sysadm %}no{% else %}yes{% endif %}'
     do_smartd: '{% if is_jail or is_vm or not do_smart %}False{% else %}True{% endif %}'
   tags: vars
-
-- debug: var=do_sys
 
 - name: resolv.conf
   template:
@@ -66,7 +65,8 @@
   ignore_errors: true
   changed_when: false
   tags: smartd
-- set_fact:
+- name: disks fact
+  set_fact:
     disks: '{{ lsdisks.stdout_lines | default([]) }}'
     cacheable: true
   when: do_smartd and not disks | default([]) | count > 0
@@ -147,8 +147,8 @@
   tags: ldap
 
 # sshd config and keys
-# root ssh access and authorized_keys
-- include_tasks: sshd.yml
+- name: root ssh access and authorized_keys
+  include_tasks: sshd.yml
   when: do_sys
   tags: sshd
 

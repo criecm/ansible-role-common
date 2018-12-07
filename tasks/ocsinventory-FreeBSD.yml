@@ -5,10 +5,11 @@
     pkgng:
       name: ocsinventory-agent
       state: present
-  - file:
+  - name: ocs conf dir
+    file:
       dest: /usr/local/etc/ocsinventory
       state: directory
-  - name: config
+  - name: ocs config
     copy:
       dest: /usr/local/etc/ocsinventory/ocsinventory-agent.cfg
       content: |
