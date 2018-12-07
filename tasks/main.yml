@@ -16,8 +16,13 @@
   changed_when: False
   check_mode: False
 
-- set_fact:
-    do_sys: '{% if "criecm" in ansible_local and ( ansible_local.criecm.common.version | default(0) | int >= common_version or ansible_local.criecm.common.last | default(0) >= now.stdout | int - 86400 ) and not do_sysadm %}no{% else %}yes{% endif %}'
+- name: set_fact do_sys
+  set_fact:
+    do_sys: '{% if "criecm" in ansible_local and
+            ( ansible_local.criecm.common.version | default(0)
+              | int >= common_version or ansible_local.criecm.common.last
+              | default(0) >= now.stdout | int - 86400
+            ) and not do_sysadm %}no{% else %}yes{% endif %}'
     do_smartd: '{% if is_jail or is_vm or not do_smart %}False{% else %}True{% endif %}'
   tags: vars
 

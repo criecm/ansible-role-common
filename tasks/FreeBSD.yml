@@ -27,7 +27,8 @@
   set_fact:
     is_vm: True
     cacheable: yes
-  when: ( vm_status.rc == 0 and vm_status.stdout != "none" ) or (jail_status.rc == 0 and jail_status.stdout == "1")
+  when: ( vm_status.rc == 0 and vm_status.stdout != "none" ) or
+        (jail_status.rc == 0 and jail_status.stdout == "1")
   tags: vars
 
 # timezone
