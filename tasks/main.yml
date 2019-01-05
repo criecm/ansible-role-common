@@ -15,6 +15,7 @@
   register: now
   changed_when: False
   check_mode: False
+  tags: vars
 
 - name: set_fact do_sys
   set_fact:
@@ -144,7 +145,7 @@
 - name: munin
   include_role:
     name: criecm.munin
-  when: munin_host and munin_servers | count() > 0 and not is_jail and do_sys
+  when: munin_host and munin_servers | count() > 0 and ( not is_jail or jail_has_vnet | default(False) ) and do_sys
   tags: munin
 
 # ldap TLS client config
