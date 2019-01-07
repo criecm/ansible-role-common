@@ -22,7 +22,18 @@
     mode: '0600'
     owner: root
   with_first_found:
-    - '{{ playbook_dir }}/templates/{{ root_shell | basename }}rc.j2'
-    - '{{ playbook_dir }}/files/{{ root_shell | basename }}rc'
+    - '{{ backup_dir }}/root/.{{ root_shell | basename }}rc'
     - '{{ root_shell | basename }}rc.j2'
+    - 'files/{{ root_shell | basename }}rc'
+    - skip: True
+
+- name: rootfiles
+  template:
+    dest: '/root/{{ item | basename }}'
+    src: '{{ item }}'
+    force: False
+    mode: '0640'
+  with_fileglob:
+    - '{{ backup_dir }}/root/*'
+    - '{{ backup_dir }}/root/.*'
     - skip: True

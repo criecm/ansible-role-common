@@ -8,7 +8,7 @@
     mode: '0600'
   notify: restart sshd
   with_fileglob:
-    - '{{ playbook_dir }}/files/ssh/{{ inventory_hostname }}/ssh_host*_key'
+    - '{{ backup_dir }}/ssh/ssh_host*_key'
 - name: ssh host pub keys
   copy:
     src: '{{ item }}'
@@ -18,7 +18,7 @@
     mode: '0644'
   notify: restart sshd
   with_fileglob:
-    - '{{ playbook_dir }}/files/ssh/{{ inventory_hostname }}/ssh_host*_key.pub'
+    - '{{ backup_dir }}/ssh/ssh_host*_key.pub'
 
 - name: sshd_config
   lineinfile:

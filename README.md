@@ -66,6 +66,8 @@
     configure smartd for disks alerts
   * `smart_mailto ('')`
     Here comes your email address if you wish to receive alerts by mail
+  * `backup_dir (files/backups/{{ inventory_hostname }})`
+    copy ssh host keys and restore /root/ files from here if any
 
 ### FreeBSD specific
 

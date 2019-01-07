@@ -183,3 +183,5 @@ debian_base_pkgs:
   - git
   - ntp
   - vim
+
+backup_dir: '{{ playbook_dir }}/files/backups/{{ ansible_hostname }}'
