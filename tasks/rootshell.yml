@@ -36,5 +36,4 @@
   with_fileglob:
     - '{{ backup_dir }}/root/*'
     - '{{ backup_dir }}/root/.*'
-    - skip: True
   when: 'exists {{ backup_dir }}/root'
