@@ -10,7 +10,6 @@
     path: '{{ gits_root }}'
     state: directory
     mode: '{{ gits_mode | default("0750") }}'
-    owner: root
     group: '{{ gits_group | default(omit) }}'
   when: gits_root != '/root'
 
@@ -38,4 +37,3 @@
     - '{{ group_gits }}'
     - '{{ role_gits }}'
   when: git_ssh_key != ""
-  check_mode: True

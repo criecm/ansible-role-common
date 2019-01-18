@@ -53,6 +53,24 @@
   when: do_sys
   tags: vars
 
+# sshd config and keys
+- name: root ssh access and authorized_keys
+  include_tasks: sshd.yml
+  when: do_sys
+  tags: sshd
+
+# root shell config
+- name: root shell
+  include_tasks: rootshell.yml
+  when: 'root_shell != "" and do_sys'
+  tags: rootshell
+
+# gits helper
+- name: gits
+  include_tasks: gits.yml
+  when: 'gits | union(host_gits) | union(role_gits) | count() > 0 and do_sys'
+  tags: gits
+
 # pkgs
 - name: install packages
   include_tasks: 'pkgs-{{ ansible_os_family }}.yml'
@@ -153,24 +171,6 @@
   include_tasks: ldap.yml
   when: ldap_base != "" and ldap_uri != "" and x509_ca_path != "" and do_sys
   tags: ldap
-
-# sshd config and keys
-- name: root ssh access and authorized_keys
-  include_tasks: sshd.yml
-  when: do_sys
-  tags: sshd
-
-# root shell config
-- name: root shell
-  include_tasks: rootshell.yml
-  when: 'root_shell != "" and do_sys'
-  tags: rootshell
-
-# gits helper
-- name: gits
-  include_tasks: gits.yml
-  tags: gits
-  when: 'gits | union(host_gits) | union(role_gits) | count() > 0 and do_sys'
 
 # crons
 - name: crons
