@@ -9,7 +9,7 @@
   notify: restart sshd
   with_fileglob:
     - '{{ backup_dir }}/ssh/ssh_host*_key'
-  when: 'exists {{ backup_dir }}/ssh'
+  when: 'backup_dir is exists'
 
 - name: ssh host pub keys
   copy:
@@ -21,7 +21,7 @@
   notify: restart sshd
   with_fileglob:
     - '{{ backup_dir }}/ssh/ssh_host*_key.pub'
-  when: 'exists {{ backup_dir }}/ssh'
+  when: 'backup_dir is exists'
 
 - name: sshd_config
   lineinfile:
