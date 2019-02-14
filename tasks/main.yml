@@ -59,6 +59,11 @@
   when: do_sys
   tags: sshd
 
+# pkgs
+- name: install packages
+  include_tasks: 'pkgs-{{ ansible_os_family }}.yml'
+  tags: pkg
+
 # root shell config
 - name: root shell
   include_tasks: rootshell.yml
@@ -70,11 +75,6 @@
   include_tasks: gits.yml
   when: 'gits | union(host_gits) | union(role_gits) | count() > 0 and do_sys'
   tags: gits
-
-# pkgs
-- name: install packages
-  include_tasks: 'pkgs-{{ ansible_os_family }}.yml'
-  tags: pkg
 
 # ntp
 - name: config ntpd
