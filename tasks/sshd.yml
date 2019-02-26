@@ -23,6 +23,11 @@
     - '{{ backup_dir }}/ssh/ssh_host*_key.pub'
   when: 'backup_dir is exists'
 
+- name: start sshd
+  service:
+    name: sshd
+    state: started
+
 - name: sshd_config
   lineinfile:
     dest: /etc/ssh/sshd_config
