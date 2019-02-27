@@ -7,6 +7,8 @@ do_sysadm: False
 # if False, disable security-related too
 do_ssi: True
 
+common_version: 4
+
 # write resolv.conf
 do_resolvconf: True
 
@@ -159,8 +161,6 @@ nut_mode: netclient
 crons: []
 host_crons: []
 role_crons: []
-
-common_version: 3
 
 do_smart: True
 
