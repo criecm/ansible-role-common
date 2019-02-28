@@ -98,15 +98,18 @@
 
 - name: smartd
   block:
-    - command: 'grep ^/ {{ etcprefix }}/etc/smartd.conf'
+    - name: get smartd.conf status
+      command: 'grep ^/ {{ etcprefix }}/etc/smartd.conf'
       ignore_errors: yes
       register: smarted
-    - template:
+    - name: (re)write smartd.conf
+      template:
         src: smartd.conf.j2
         dest: '{{ etcprefix }}/etc/smartd.conf'
         force: '{% if smarted.rc == 0 %}no{% else %}yes{% endif %}'
       notify: restart smartd
-    - service:
+    - name: ensure smartd started
+      service:
         name: '{{ smartd_service }}'
         state: started
         enabled: true
