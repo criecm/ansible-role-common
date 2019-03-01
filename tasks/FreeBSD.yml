@@ -93,7 +93,7 @@
     - command: 'kldload mfip'
       ignore_errors: True
       when: has_mfi.rc == 0 and loadrc.changed
-  when: do_smartd
+  when: do_sys and do_smartd
 
 - name: hardening freebsd
   block:
