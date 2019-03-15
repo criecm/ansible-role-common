@@ -131,6 +131,8 @@ role_pkgs: []
 # same for inventory
 host_pkgs: []
 
+group_pkgs: []
+
 # path prefix for relative gits[path]'s
 gits_root: /root
 

@@ -19,7 +19,7 @@
 # packages standard
 - name: pkgs standard
   pkgng:
-    name: '{{ freebsd_base_pkgs + host_pkgs + role_pkgs + pkgs }}'
+    name: '{{ freebsd_base_pkgs + host_pkgs + role_pkgs + group_pkgs + pkgs }}'
     state: present
   tags: pkgs
 
