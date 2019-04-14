@@ -81,18 +81,18 @@
   block:
     - name: is mfi ?
       command: 'mfiutil show drives'
-      ignore_errors: true
       check_mode: False
+      failed_when: False
       register: has_mfi
     - lineinfile:
         dest: /boot/loader.conf
         line: 'mfip_load="YES"'
         regexp: '^mfip_load='
       register: loadrc
-      when: has_mfi.rc == 0
+      when: has_mfi.stdout_lines | count() > 0
     - command: 'kldload mfip'
       ignore_errors: True
-      when: has_mfi.rc == 0 and loadrc.changed
+      when: has_mfi.stdout_lines | count() > 0 and loadrc.changed
   when: do_sys and do_smartd
 
 - name: hardening freebsd
