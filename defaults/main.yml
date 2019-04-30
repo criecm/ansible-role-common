@@ -187,3 +187,6 @@ debian_base_pkgs:
   - vim
 
 backup_dir: '{{ playbook_dir }}/files/backups/{{ ansible_hostname }}'
+
+common_freebsd_sysctls:
+  - { regexp: '^security.bsd.see_other_uids=', line: 'security.bsd.see_other_uids=0' }

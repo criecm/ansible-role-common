@@ -113,8 +113,7 @@
         dest: /etc/sysctl.conf
         regexp: '{{ item.regexp }}'
         line: '{{ item.line }}'
-      with_items:
-        - { regexp: '^security.bsd.see_other_uids=', line: 'security.bsd.see_other_uids=0' }
+      with_items: '{{ common_freebsd_sysctls }}'
       when: 'freebsd_allow_see_other | default(False)'
   tags: baseconf, security
   when: do_sysadm or do_ssi
