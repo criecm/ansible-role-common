@@ -1,7 +1,7 @@
 ---
 - name: restart sshd
   service:
-    name: sshd
+    name: '{{ ssh_service_name | default("sshd") }}'
     state: restarted
 
 - name: reconfigure postfix

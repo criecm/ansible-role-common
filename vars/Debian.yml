@@ -2,3 +2,4 @@
 ldap_etcdir: /etc/ldap
 munin_etcdir: /etc/munin
 smartd_service: smartmontools
+ssh_service_name: ssh

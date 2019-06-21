@@ -9,7 +9,7 @@
   when: ansible_distribution_version | version_compare('6.4','<')
 
 - name: mailrelay 6.4+
-  template:
+  copy:
     dest: /etc/mail/smtpd.conf
     content: |
       # Cree par ansible. Ne sera plus modifie automatiquement.
