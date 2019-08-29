@@ -5,7 +5,7 @@
   with_first_found:
     - files:
         - '{{ ansible_os_family }}.yml'
-      skip: True
+      errors: 'ignore'
   loop_control:
     loop_var: includefile
   tags: vars
@@ -50,7 +50,7 @@
   with_first_found:
     - files:
         - '{{ ansible_os_family }}.yml'
-      skip: True
+      errors: 'ignore'
   loop_control:
     loop_var: includefile
   when: do_sys
