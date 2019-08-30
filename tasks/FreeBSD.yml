@@ -84,13 +84,15 @@
       check_mode: False
       failed_when: False
       register: has_mfi
-    - lineinfile:
+    - name: mfip_load in loader.conf
+      lineinfile:
         dest: /boot/loader.conf
         line: 'mfip_load="YES"'
         regexp: '^mfip_load='
       register: loadrc
       when: has_mfi.stdout_lines | count() > 0
-    - command: 'kldload mfip'
+    - name: kldload mfip
+      command: 'kldload mfip'
       ignore_errors: True
       when: has_mfi.stdout_lines | count() > 0 and loadrc.changed
   when: do_sys and do_smartd

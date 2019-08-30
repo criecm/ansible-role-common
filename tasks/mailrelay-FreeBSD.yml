@@ -24,4 +24,4 @@
         dest: /etc/rc.conf
         line: 'sendmail_submit_enable="NO"'
         regexp: '^sendmail_submit_enable='
-  when: domailrelay.changed == True
+  when: domailrelay.changed

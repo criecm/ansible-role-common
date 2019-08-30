@@ -31,7 +31,7 @@
     depth: 2
     umask: '{{ item.umask | default("0022") }}'
     version: '{{ item.version | default("master") }}'
-  with_items: 
+  with_items:
     - '{{ gits }}'
     - '{{ host_gits }}'
     - '{{ group_gits }}'

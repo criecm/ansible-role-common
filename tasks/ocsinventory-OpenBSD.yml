@@ -51,5 +51,6 @@
       nosoftware=on
       ca=/etc/ssl/cert.pem
 - name: run ocsinventory-agent
-  shell: '/usr/local/bin/ocsinventory-agent'
+  command: '/usr/local/bin/ocsinventory-agent'
   changed_when: False
+  failed_when: False

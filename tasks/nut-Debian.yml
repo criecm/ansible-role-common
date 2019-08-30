@@ -20,5 +20,3 @@
     name: nut-client
     state: started
     enabled: True
-  
-
