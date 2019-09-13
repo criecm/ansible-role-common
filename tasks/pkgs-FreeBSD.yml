@@ -17,10 +17,11 @@
   tags: pkgs
 
 # packages standard
-- name: pkgs standard
+- name: pkgs
   pkgng:
     name: '{{ freebsd_base_pkgs + host_pkgs + role_pkgs + group_pkgs + pkgs }}'
-    state: present
+    state: '{% if do_upgrade | default(False) %}latest{% else %}present{% endif %}'
+  register: pkg_result
   tags: pkgs
 
 - name: pkgs pkg machine physique
@@ -30,6 +31,5 @@
       - dmidecode
       - ipmitool
       - smartmontools
-    state: present
-  when: not is_jail and not is_vm and do_sysadm
+    state: '{% if not is_jail and not is_vm %}present{% else %}absent{% endif %}'
   tags: pkgs
