@@ -18,7 +18,7 @@
     dest: '/root/.ssh/{{ git_ssh_key }}'
     src: 'files/{{ git_ssh_key }}'
     owner: root
-    group: 0
+    group: '0'
     mode: '0600'
   when: 'git_ssh_key != ""'
 

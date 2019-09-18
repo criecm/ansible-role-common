@@ -5,7 +5,7 @@
     path: '{{ ldap_etcdir }}'
     state: directory
     owner: 0
-    group: 0
+    group: '0'
     mode: '0755'
   when: ldap_base != "" and do_sysadm
   tags: ldapconf

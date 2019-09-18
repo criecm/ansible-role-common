@@ -129,7 +129,7 @@
         src: '{{ x509_ca_file }}'
         dest: '{{ x509_ca_path }}'
         owner: root
-        group: 0
+        group: '0'
         mode: '0644'
     - name: CA local (debian)
       file:

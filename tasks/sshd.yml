@@ -4,7 +4,7 @@
     src: '{{ item }}'
     dest: '/etc/ssh/{{ item | regex_replace(".*/","") }}'
     owner: root
-    group: 0
+    group: '0'
     mode: '0600'
   notify: restart sshd
   with_fileglob:
@@ -16,7 +16,7 @@
     src: '{{ item }}'
     dest: '/etc/ssh/{{ item | regex_replace(".*/","") }}'
     owner: root
-    group: 0
+    group: '0'
     mode: '0644'
   notify: restart sshd
   with_fileglob:
