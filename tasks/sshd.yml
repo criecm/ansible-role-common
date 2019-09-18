@@ -47,7 +47,7 @@
     state: directory
     mode: '0700'
     owner: root
-    group: 0
+    group: '0'
 
 - name: root authorized_keys
   authorized_key:
