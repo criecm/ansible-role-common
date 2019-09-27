@@ -4,6 +4,7 @@
 #
 # allow disabling most actions, keeping vars
 do_sysadm: False
+do_sys: False
 # if False, disable security-related too
 do_ssi: True
 

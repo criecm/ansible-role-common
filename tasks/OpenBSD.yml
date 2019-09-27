@@ -22,7 +22,7 @@
     state: link
     force: yes
   tags: timezone
-  when: do_sysadm
+  when: do_sys
 
 ## list disks
 #- name: list disks

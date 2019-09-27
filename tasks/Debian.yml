@@ -19,6 +19,7 @@
     name: debconf-utils
     state: present
   tags: baseconf, pkg
+  when: do_sys
 
 # timezone
 - block:
@@ -32,7 +33,7 @@
     command: 'echo {{ host_timezone }} > /etc/timezone'
     when: zoneinfo.stdout != host_timezone
   tags: timezone
-  when: do_sysadm
+  when: do_sys
 
 # locales
 - name: set locales
@@ -47,7 +48,7 @@
     loop_var: locale
   notify: debian regen locales
   tags: locales
-  when: do_sysadm
+  when: do_sys
 ## list disks
 #- name: list disks
 #  shell: "lsblk | awk '{if($6~/^disk$/){print $1;}}'"

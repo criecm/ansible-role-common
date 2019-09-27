@@ -17,6 +17,16 @@
   check_mode: False
   tags: vars
 
+- name: os specific tasks
+  include_tasks: '{{ includefile }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_os_family }}.yml'
+      errors: 'ignore'
+  loop_control:
+    loop_var: includefile
+  tags: vars
+
 - name: set_fact do_sys
   set_fact:
     do_sys: '{% if "criecm" in ansible_local and
@@ -44,17 +54,6 @@
   file:
     path: '{{ etcprefix }}/etc/ansible/facts.d'
     state: directory
-
-- name: os specific tasks
-  include_tasks: '{{ includefile }}'
-  with_first_found:
-    - files:
-        - '{{ ansible_os_family }}.yml'
-      errors: 'ignore'
-  loop_control:
-    loop_var: includefile
-  when: do_sys
-  tags: vars
 
 # sshd config and keys
 - name: root ssh access and authorized_keys

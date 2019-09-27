@@ -43,6 +43,7 @@
       command: 'tzsetup {{ host_timezone }}'
       when: zoneinfo.stdout != host_timezone and do_sysadm
   tags: timezone
+  when: do_sys
 
 - name: cap_mkdb & pwd_mkdb
   block:
@@ -67,6 +68,7 @@
       command: 'pwd_mkdb /etc/master.passwd'
       when: statpwd.results[0].stat.mtime > statpwd.results[1].stat.mtime
   tags: vars, sanity
+  when: do_sys
 
 - name: freebsd workaround pyXX-ansible
   file:
@@ -76,6 +78,7 @@
   with_items:
     - 27
     - 36
+  when: do_sys
 
 - name: list disks
   block:
@@ -118,4 +121,4 @@
       with_items: '{{ common_freebsd_sysctls }}'
       when: 'freebsd_allow_see_other | default(False)'
   tags: baseconf, security
-  when: do_sysadm or do_ssi
+  when: do_sys or do_ssi
