@@ -153,9 +153,6 @@ git_ssh_key:
 ocsinventory_server: ''
 ocsinventory_tag: ''
 
-# munin
-munin_host: ''
-
 # NUT
 nut_monitor:
 nut_mode: netclient

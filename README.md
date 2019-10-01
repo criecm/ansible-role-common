@@ -54,9 +54,6 @@
       * `version` (master)
   * `crons`,`host_crons`,`role_crons`:
     list of dicts for cron module
-  * `munin_host` ('') — and other variables in criecm.munin role
-    Munin master host (from inventory)
-    If not empty, will trigger criecm.munin role for master and/or nodes
   * `ocsinventory_server` ('')
     If present, install and configure openinventory-agent
   * `root_shell` (zsh)
@@ -74,7 +71,7 @@
   * `pkg_repo_conf` (pkgecm.conf)
     name of a pkg repo config file to be installed first
   * `is_jail` (False)
-    if True, will skip hardware monitoring tools (smart, ipmi, snmp, dmidecode, munin)
+    if True, will skip hardware monitoring tools (smart, ipmi, snmp, dmidecode)
   * `freebsd_base_pkgs ([git,rsync,vim-console,root_shell])`
     list of packages to install
 

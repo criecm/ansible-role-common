@@ -92,6 +92,7 @@
   ignore_errors: true
   changed_when: false
   tags: smartd
+  when: do_sys and do_smartd
 - name: disks fact
   set_fact:
     disks: '{{ lsdisks.stdout_lines | default([]) }}'
@@ -164,13 +165,6 @@
   include_tasks: 'snmpd-{{ ansible_os_family }}.yml'
   when: not is_jail and not is_vm and do_sys and do_snmp
   tags: snmpd
-
-# munin config
-- name: munin
-  include_role:
-    name: criecm.munin
-  when: munin_host and munin_servers | count() > 0 and ( not is_jail or jail_has_vnet | default(False) ) and do_sys
-  tags: munin
 
 # ldap TLS client config
 - name: ldap client
