@@ -13,7 +13,7 @@
         dest: '/usr/local/etc/pkg/repos/{{ pkg_repo_conf | regex_replace(".*/", "") }}'
         validate: 'pkg -vv -C %s'
         mode: '0644'
-  when: pkg_repo_conf | lenght > 0
+  when: pkg_repo_conf | length > 0
   tags: pkgs
 
 # packages standard
