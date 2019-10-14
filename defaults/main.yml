@@ -154,7 +154,7 @@ ocsinventory_server: ''
 ocsinventory_tag: ''
 
 # NUT
-nut_monitor:
+nut_monitor: ''
 nut_mode: netclient
 
 # crons
