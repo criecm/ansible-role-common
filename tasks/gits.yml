@@ -20,7 +20,7 @@
     owner: root
     group: '0'
     mode: '0600'
-  when: 'git_ssh_key != ""'
+  when: git_ssh_key | length > 0
 
 - name: repos git gits
   git:
@@ -36,4 +36,4 @@
     - '{{ host_gits }}'
     - '{{ group_gits }}'
     - '{{ role_gits }}'
-  when: git_ssh_key != ""
+  when: git_ssh_key | length > 0

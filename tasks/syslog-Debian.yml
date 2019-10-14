@@ -3,5 +3,5 @@
   template:
     src: rsyslog_ecm.conf.j2
     dest: /etc/rsyslog.d/ecm.conf
-    mode: 600
+    mode: '0600'
   notify: restart Debian rsyslog

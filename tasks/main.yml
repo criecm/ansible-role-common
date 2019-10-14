@@ -69,7 +69,7 @@
 # root shell config
 - name: root shell
   include_tasks: rootshell.yml
-  when: do_sys and root_shell != ""
+  when: do_sys and root_shell | length > 0
   tags: rootshell
 
 # gits helper
@@ -169,7 +169,7 @@
 # ldap TLS client config
 - name: ldap client
   include_tasks: ldap.yml
-  when: ldap_base != "" and ldap_uri != "" and x509_ca_path != "" and do_sys
+  when: ldap_base | lenght > 0 and ldap_uri | lenght > 0 and x509_ca_path | lenght > 0 and do_sys
   tags: ldap
 
 # crons
@@ -195,7 +195,7 @@
 # mailrelay
 - name: mailrelay
   include_tasks: 'mailrelay-{{ ansible_os_family }}.yml'
-  when: mailrelay != "" and not is_mailrelay and do_sys
+  when: mailrelay | lenght > 0 and not is_mailrelay and do_sys
   tags: mailrelay
 
 - name: alias mail root
@@ -216,13 +216,13 @@
 # NUT (Network Ups Tools)
 - name: Network Ups Tools
   include_tasks: 'nut-{{ ansible_os_family }}.yml'
-  when: nut_monitor != "" and not is_vm and not is_jail and do_sys
+  when: nut_monitor | lenght > 0 and not is_vm and not is_jail and do_sys
   tags: nut
 
 # ocsinventory agent
 - name: ocsinventory agent
   include_tasks: 'ocsinventory-{{ ansible_os_family }}.yml'
-  when: ocsinventory_server != "" and not is_jail and not is_vm and do_sys
+  when: ocsinventory_server | lenght > 0 and not is_jail and not is_vm and do_sys
   tags: ocsinventory
 
 - name: fact done

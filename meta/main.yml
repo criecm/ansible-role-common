@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: common
   author: Geoffroy Desvernay
   description: base role for working system here
   company: Ecole Centrale Marseille
