@@ -114,6 +114,10 @@
   * `mailrelay` ()
     If defined, name/IP of the mail relay
 
+### Ssh
+  * `sshd_allow_groups` ('')
+    define AllowGroups in `/etc/ssh/sshd_config`
+
 ### LDAP basic config
   * `ldap_base` ('')
     baseDN ldap (for ldap.conf)
