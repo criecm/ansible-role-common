@@ -48,7 +48,7 @@
     line: 'AllowGroups	{{ sshd_allow_groups }}'
     insertafter: '.*PermitTunnel'
   notify: restart sshd
-  when: sshd_allow_groups | length > 0
+  when: sshd_allow_groups | default("") | length > 0
   tags: sshdconf
 
 - name: config ssh root
