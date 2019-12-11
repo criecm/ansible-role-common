@@ -22,6 +22,7 @@
   copy:
     src: upsmon_openbsd_rc
     dest: /etc/rc.d/upsmon
+    force: no
 
 - name: service upsmon
   service:
