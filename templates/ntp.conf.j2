@@ -5,11 +5,11 @@ server {{ srv }} iburst
 pool {{ pool }}
 {% endfor %}
 
-restrict default limited kod nomodify notrap nopeer noquery
-restrict -6 default limited kod nomodify notrap nopeer noquery
-restrict    source  limited kod nomodify notrap noquery
+restrict -4 default kod notrap nomodify nopeer noquery limited
+restrict -6 default kod notrap nomodify nopeer noquery limited
+restrict source notrap nomodify noquery
 restrict 127.0.0.1
-restrict -6 ::1
+restrict ::1
 {% if ntp_leapfile %}
 leapfile "{{ ntp_leapfile }}"
 {% endif %}
