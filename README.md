@@ -23,6 +23,7 @@
 
   * Files matching `cles_ssh/*.pub` will be authorized on root account
   * Files matching `cles_ssh/*.del` will be removed
+  * vimrc file in files/ will be installed as /root/.vimrc
 
 ### ssh keys
 
