@@ -72,6 +72,14 @@
   when: do_sys and root_shell | length > 0
   tags: rootshell
 
+# vimrc
+- name: root vimrc
+  copy:
+    src: vimrc
+    dest: .vimrc
+    force: no
+  tags: vimrc
+
 # gits helper
 - name: gits
   include_tasks: gits.yml
