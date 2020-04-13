@@ -70,16 +70,6 @@
   tags: vars, sanity
   when: do_sys
 
-- name: freebsd workaround pyXX-ansible
-  file:
-    src: '{{ etcprefix }}/etc/ansible'
-    dest: '{{ etcprefix }}/etc/py{{ item }}-ansible'
-    state: link
-  with_items:
-    - 27
-    - 36
-  when: do_sys
-
 - name: list disks
   block:
     - name: is mfi ?
