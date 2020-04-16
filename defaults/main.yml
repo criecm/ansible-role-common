@@ -83,6 +83,9 @@ resolvers:
 #  - { network: '^2001:660:5404:', ip: "2001:660:5404:b0b::53" }
 #  - { network: '^10\.3\.0\.', ip: "147.94.19.254" }
 
+# for IPv6-only hosts
+dns64_resolvers: []
+
 # search domains for resolv.conf
 #search_domains:
 #  - { network: '2001::/8', domain: 'ipv6.univ.fr' }

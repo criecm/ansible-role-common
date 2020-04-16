@@ -37,6 +37,8 @@
     if True, will use 127.0.0.1 in resolv.conf first
   * `resolvers` ( [{ network='0.0.0.0/0', ip='8.8.8.8' }] )
     list of dicts, ip will be used if host match network (in listed order)
+  * `dns64_resolvers ([])`
+    for IP6-only hosts, overrides `resolvers` mechanism with DNS64-enabled resolvers
   * `rootmailto` ()
     mail to forward root's mail
   * `gits_root` ('/root')
