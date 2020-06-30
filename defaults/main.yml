@@ -171,6 +171,7 @@ openbsd_pkg_mirror: http://ftp.openbsd.org
 
 freebsd_base_pkgs:
   - git
+  - 'py{{ ansible_python_version | regex_replace("([2-3])\.([0-9]*)\..*$","\1\2") }}-pip'
   - rsync
   - vim-console
   - '{{ root_shell | basename }}'
@@ -178,6 +179,7 @@ freebsd_base_pkgs:
 openbsd_base_pkgs:
   - git
   - rsync
+  - 'py{{ ansible_python_version | regex_replace("([2-3])\..*$","\1") }}-pip'
   - vim--no_x11
   - '{{ root_shell | basename }}'
 
@@ -186,6 +188,7 @@ debian_base_pkgs:
   - git
   - ntp
   - vim
+  - 'python{{ ansible_python_version | regex_replace("([2-3])\..*$","\1") }}-pip'
 
 backup_dir: '{{ playbook_dir }}/files/backups/{{ ansible_hostname }}'
 
