@@ -48,3 +48,7 @@
   service:
     name: '{{ smartd_service }}'
     state: restarted
+
+- name: post-upgrade
+  command: '/root/post-upgrade.sh'
+  when: post_upgrade_script.stat.exists | default(False)

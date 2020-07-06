@@ -23,6 +23,7 @@
     state: '{% if do_upgrade | default(False) %}latest{% else %}present{% endif %}'
   register: pkg_result
   tags: pkgs
+  notify: post-upgrade
 
 - name: pkgs pkg machine physique
   pkgng:

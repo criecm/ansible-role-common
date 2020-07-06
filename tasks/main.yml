@@ -40,6 +40,10 @@
   debug:
     var: do_sys
 
+- name: stat post-upgrade script
+  stat:
+    path: /root/post-upgrade.sh
+
 - name: resolv.conf
   template:
     src: resolv.conf.j2
