@@ -16,6 +16,11 @@
   when: pkg_repo_conf | length > 0
   tags: pkgs
 
+- name: pkg update
+  command: 'pkg update -f'
+  changed_when: False
+  check_mode: False
+
 # packages standard
 - name: pkgs
   pkgng:
