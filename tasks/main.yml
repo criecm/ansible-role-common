@@ -43,6 +43,7 @@
 - name: stat post-upgrade script
   stat:
     path: /root/post-upgrade.sh
+  register: post_upgrade_script
 
 - name: resolv.conf
   template:
