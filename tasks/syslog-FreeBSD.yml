@@ -11,6 +11,7 @@
       security.*;auth.*             @{{ syslog_auth_server | default(syslog_server) }}
     dest: /usr/local/etc/syslog.d/authlog.conf
   notify: restart BSD syslogd
+  when: syslog_auth_server | default(False) or syslog_server | default(False)
 
 - name: common log
   copy:
@@ -18,6 +19,7 @@
       *.*                           @{{ syslog_server }}
     dest: /usr/local/etc/syslog.d/centrallog.conf
   notify: restart BSD syslogd
+  when: syslog_server | default(False)
 
 - name: console.log
   lineinfile:

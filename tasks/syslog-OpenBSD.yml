@@ -6,6 +6,7 @@
     regexp: '^[^#]+notice.*@.*'
     line: '*.notice;cron,ftp,kern,lpr,mail,user.none	@{{ syslog_server }}'
   notify: restart BSD syslogd
+  when: syslog_server | default(False)
 
 - name: syslog central / auth
   lineinfile:
@@ -14,3 +15,4 @@
     regexp: '^auth.*@.*'
     line: 'auth.info;authpriv.info					@{{ syslog_auth_server | default(syslog_server) }}'
   notify: restart BSD syslogd
+  when: syslog_server | default(False)

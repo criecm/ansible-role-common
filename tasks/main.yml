@@ -170,7 +170,7 @@
 # syslog
 - name: syslog client
   include_tasks: 'syslog-{{ ansible_os_family }}.yml'
-  when: syslog_server and not is_syslogd and do_sys
+  when: not is_syslogd and do_sys
   tags: syslog
 
 # snmp (missing Debian and OpenBSD)
