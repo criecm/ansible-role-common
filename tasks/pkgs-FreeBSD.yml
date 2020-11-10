@@ -17,7 +17,7 @@
   tags: pkgs
 
 - name: pkg update
-  command: 'pkg update -f'
+  command: 'pkg update'
   changed_when: False
   check_mode: False
 
