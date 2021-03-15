@@ -54,7 +54,7 @@
     backup: yes
   tags: resolver
 #  when: not is_jail and ( do_sys or do_resolvconf )
-  when: do_sys or do_resolvconf
+  when: do_sys and do_resolvconf
 
 - name: facts.d
   file:

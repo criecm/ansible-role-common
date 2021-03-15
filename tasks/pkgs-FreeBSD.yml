@@ -38,5 +38,5 @@
       - ipmitool
       - smartmontools
     state: present
-  when: not is_jail
+  when: not is_jail and not is_vm
   tags: pkgs
