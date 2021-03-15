@@ -6,7 +6,7 @@
     line: 'accept from local for any relay via {{ mailrelay }}'
     regexp: '^accept .*for any relay'
   notify: restart smtpd
-  when: ansible_distribution_version | version_compare('6.4','<')
+  when: ansible_distribution_version is version('6.4','<')
 
 - name: mailrelay 6.4+
   copy:
@@ -24,4 +24,4 @@
       match for any action "relay"
     force: no
   notify: restart smtpd
-  when: ansible_distribution_version | version_compare('6.4','>=')
+  when: ansible_distribution_version is version('6.4','>=')
