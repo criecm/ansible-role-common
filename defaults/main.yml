@@ -1,5 +1,5 @@
 ---
-# vars to define elsewhere (group_vars/, host_vars/, inventory, …) see 
+# vars to define elsewhere (group_vars/, host_vars/, inventory, …) see
 # http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence
 #
 # allow disabling most actions, keeping vars
@@ -57,7 +57,7 @@ is_mailrelay: False
 mailaliases: /etc/aliases
 
 # redirect mail for root to...
-rootmailto: 
+rootmailto:
 
 # x509 CA certificate
 x509_ca_file: ''
@@ -126,7 +126,7 @@ default_sshd_lines: []
 # host specific lines
 sshd_lines: []
 
-# host specific pkgs 
+# host specific pkgs
 pkgs: []
 
 # same for use in sub-roles
@@ -187,6 +187,7 @@ debian_base_pkgs:
   - '{{ root_shell | basename }}'
   - git
   - ntp
+  - ntpdate
   - vim
   - 'python{{ ansible_python_version | regex_replace("([2-3])\..*$","\1") }}-pip'
 
