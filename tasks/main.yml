@@ -230,7 +230,7 @@
 # NUT (Network Ups Tools)
 - name: Network Ups Tools
   include_tasks: 'nut-{{ ansible_os_family }}.yml'
-  when: nut_monitor | length > 0 and not is_vm and not is_jail and do_sys
+  when: nut_monitor | length > 0 and not is_vm and not is_jail and do_sys and do_nut
   tags: nut
 
 # ocsinventory agent

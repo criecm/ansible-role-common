@@ -13,6 +13,9 @@ common_version: 4
 # write resolv.conf
 do_resolvconf: True
 
+# install nut
+do_nut: True
+
 # basedn LDAP
 ldap_base:
 # URI LDAP
