@@ -1,17 +1,8 @@
 ---
-- name: get vm guest status
-  shell: 'dmesg | egrep "(on KVM|Virtual HD|VMware|Xen virtual console)"'
-  failed_when: False
-  check_mode: False
-  changed_when: False
-  register: vm_status
-  tags: vars
-
 - name: register is_vm
   set_fact:
-    is_vm: True
+    is_vm: '{{ ansible_virtualization_role == "guest" }}'
     cacheable: yes
-  when: vm_status.rc == 0
   tags: vars
 
 - name: installe debconf-utils
