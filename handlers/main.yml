@@ -21,6 +21,11 @@
     name: bsnmpd
     state: restarted
 
+- name: restart snmpd
+  service:
+    name: snmpd
+    state: restarted
+
 - name: restart BSD syslogd
   service:
     name: syslogd

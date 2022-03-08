@@ -5,3 +5,11 @@
     name: '{{ debian_base_pkgs + role_pkgs + host_pkgs + pkgs }}'
     state: present
   tags: pkgs
+
+- name: pkgs pkg machine physique
+  apt:
+    name:
+      - snmpd
+    state: present
+  when: not is_jail and not is_vm
+  tags: pkgs

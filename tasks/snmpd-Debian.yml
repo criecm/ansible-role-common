@@ -1,2 +1,42 @@
 ---
-# TODO
+# snmpd
+- name: snmpd config file
+  lineinfile:
+    line: '{{ item.line }}'
+    regexp: '{{ item.regexp }}'
+    dest: /etc/snmp/snmpd.conf
+  with_items:
+    - { line: 'agentaddress  udp:161,udp6:[::1]:161', regexp: '^agentaddress' }
+    - { line: 'sysLocation Epicerie', regexp: '^sysLocation' }
+    - { line: 'sysContact CRI <c@ec-m.fr>', regexp: '^sysContact' }
+  notify: restart snmpd
+- name: snmpd config file - access perms
+  lineinfile:
+    line: '{{ item }}'
+    dest: /etc/snmp/snmpd.conf
+    insertbefore: '^rocommunity .* -V systemonly'
+  loop:
+    - rocommunity public localhost
+    - rocommunity public 10.3.0.0/24
+    - rocommunity public 147.94.38.0/28
+    - rocommunity6 public 2001:660:5404:123::/64
+    - rocommunity6 public 2001:660:5404:194::/64
+    - rocommunity public 147.94.19.160/28
+  notify: restart snmpd
+- name: snmpd config file - hardware monitoring
+  lineinfile:
+    line: '{{ item }}'
+    dest: /etc/snmp/snmpd.conf
+  loop:
+    - proc  mountd
+    - proc  ntalkd    4
+    - disk       /     10000
+    - disk       /var  5%
+    - includeAllDisks  10%
+    - load   12 10 5
+  notify: restart snmpd
+- name: enable snmpd
+  service:
+    name: snmpd
+    state: started
+    enabled: yes
