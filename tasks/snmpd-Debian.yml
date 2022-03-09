@@ -22,6 +22,7 @@
     - rocommunity6 public 2001:660:5404:123::/64
     - rocommunity6 public 2001:660:5404:194::/64
     - rocommunity public 147.94.19.160/28
+    - rocommunity public 147.94.19.60/32
   notify: restart snmpd
 - name: snmpd config file - hardware monitoring
   lineinfile:
