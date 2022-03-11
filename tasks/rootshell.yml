@@ -18,15 +18,17 @@
 - name: '/root/.{{ root_shell | basename }}rc'
   template:
     dest: '/root/.{{ root_shell | basename }}rc'
-    src: '{{ item }}'
+    src: '{{ lookup("first_found", params, errors="ignore") }}'
     mode: '0600'
     owner: root
-  with_first_found:
-    - skip: True
-    - '{{ backup_dir }}/root/.{{ root_shell | basename }}rc'
-    - '{{ playbook_dir }}/templates/{{ root_shell | basename }}rc.j2'
-    - '{{ root_shell | basename }}rc.j2'
-    - 'files/{{ root_shell | basename }}rc'
+  vars:
+    params:
+      files:
+      - '{{ backup_dir }}/root/.{{ root_shell | basename }}rc'
+      - '.{{ root_shell | basename }}rc.j2'
+      - '{{ playbook_dir }}/templates/{{ root_shell | basename }}rc.j2'
+      - '{{ root_shell | basename }}rc.j2'
+      skip: True
 
 - name: rootfiles
   template:
