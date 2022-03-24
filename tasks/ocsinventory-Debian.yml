@@ -18,6 +18,7 @@
   copy:
     dest: /etc/ocsinventory/ocsinventory-agent.cfg
     content: |
+      ca=/etc/ssl/certs/ca-certificates.crt
       server={{ ocsinventory_server }}
       basevardir=/var/db/ocsinventory-agent
       {% if ocsinventory_tag %}tag={{ ocsinventory_tag }}{% endif %}
