@@ -17,9 +17,11 @@
   tags: pkgs
 
 - name: pkg update
-  command: 'pkg update'
+  command: 'pkg update -f'
   changed_when: False
   check_mode: False
+  environment:
+    IGNORE_OSVERSION: yes
 
 # packages standard
 - name: pkgs
