@@ -39,11 +39,19 @@
       changed_when: False
       ignore_errors: True
       check_mode: False
+    - name: stat localzone
+      stat:
+        path: /etc/localtime
+      register: statlocaltime
+    - name: stat /usr/share/zoneinfo/{{ host_timezone }}
+      stat:
+        path: '/usr/share/zoneinfo/{{ host_timezone }}'
+      register: statzone
     - name: set timezone
       command: 'tzsetup {{ host_timezone }}'
-      when: zoneinfo.stdout != host_timezone and do_sysadm
+      when: zoneinfo.stdout != host_timezone or
+          ( statzone.stat.checksum != statlocaltime.stat.checksum )
   tags: timezone
-  when: do_sys
 
 - name: cap_mkdb & pwd_mkdb
   block:
