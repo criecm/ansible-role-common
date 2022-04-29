@@ -68,6 +68,8 @@
     Here comes your email address if you wish to receive alerts by mail
   * `backup_dir (files/backups/{{ inventory_hostname }})`
     copy ssh host keys and restore /root/ files from here if any
+  * `monitoring_from ([])`
+    list of networks to allow for snmp
 
 ### FreeBSD specific
 

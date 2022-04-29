@@ -163,6 +163,9 @@ ocsinventory_tag: ''
 nut_monitor: ''
 nut_mode: netclient
 
+# monitoring IPs
+monitoring_from: []
+
 # crons
 crons: []
 host_crons: []

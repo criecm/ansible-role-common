@@ -174,7 +174,7 @@
   when: not is_syslogd and do_sys
   tags: syslog
 
-# snmp (missing Debian and OpenBSD)
+# snmp (missing OpenBSD)
 - name: snmp server
   include_tasks: 'snmpd-{{ ansible_os_family }}.yml'
   when: not is_jail and not is_vm and do_sys and do_snmp
