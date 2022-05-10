@@ -23,6 +23,10 @@
   environment:
     IGNORE_OSVERSION: yes
 
+- name: upgrade pkgs
+  command: 'pkg upgrade -y'
+  when: do_upgrade | default(False)
+
 # packages standard
 - name: pkgs
   pkgng:
