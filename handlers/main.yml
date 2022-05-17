@@ -26,6 +26,11 @@
     name: snmpd
     state: restarted
 
+- name: touch console.log
+  file:
+    path: /var/log/console.log
+    state: touch
+
 - name: restart BSD syslogd
   service:
     name: syslogd
@@ -43,11 +48,6 @@
 
 - name: debian regen locales
   command: /usr/sbin/locale-gen
-
-- name: touch console.log
-  file:
-    path: /var/log/console.log
-    state: touch
 
 - name: restart smartd
   service:
