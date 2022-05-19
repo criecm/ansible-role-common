@@ -53,6 +53,14 @@
           ( statzone.stat.checksum != statlocaltime.stat.checksum )
   tags: timezone
 
+- name: http proxy
+  replace:
+    after: 'default:\\'
+    regexp: '^(?P<debut>\t:setenv=BLOCKSIZE=K)(,http_proxy=[^,:]+,https_proxy=[^,:]+)?(?P<reste>[^:]+)?:\\$'
+    replace: '\g<debut>,http_proxy={{ http_proxy | regex_replace(":","\\\\c") }},https_proxy={{ http_proxy | regex_replace(":","\\\\c") }}\g<reste>:\\'
+    dest: /etc/login.conf
+  when: http_proxy | default(False)
+
 - name: cap_mkdb & pwd_mkdb
   block:
     - name: get login.conf stats
@@ -84,6 +92,7 @@
       command: 'mfiutil show drives'
       check_mode: False
       failed_when: False
+      changed_when: False
       register: has_mfi
     - name: mfip_load in loader.conf
       lineinfile:
@@ -96,7 +105,7 @@
       command: 'kldload mfip'
       ignore_errors: True
       when: has_mfi.stdout_lines | count() > 0 and loadrc.changed
-  when: do_sys and do_smartd
+  when: do_sys
 
 - name: hardening freebsd
   block:

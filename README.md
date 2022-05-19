@@ -70,6 +70,8 @@
     copy ssh host keys and restore /root/ files from here if any
   * `monitoring_from ([])`
     list of networks to allow for snmp
+  * `http_proxy ('')`
+    To set http_proxy and https_proxy global values (FreeBSD only)
 
 ### FreeBSD specific
 
