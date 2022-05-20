@@ -37,4 +37,8 @@
 
 - name: set syslogd_flags
   command: 'sysrc syslogd_flags="-c -s"'
-  when: sysrc_syslogd_flags.rc > 0
+  when: sysrc_syslogd_flags.rc > 0 or
+    ( sysrc_syslogd_flags.stdout_lines is search("-ss") and
+      ( syslog_server | default(False) or
+        syslog_auth_server | default(False) ) )
+  notify: restart BSD syslogd
