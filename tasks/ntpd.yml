@@ -15,7 +15,7 @@
 # ntp leapfile
 - name: leapfile cron
   lineinfile:
-    line: 'daily_ntpd_leapfile_enable="NO"'
+    line: 'daily_ntpd_leapfile_enable="YES"'
     regexp: '^daily_ntpd_leapfile_enable='
     insertafter: 'daily_ntpd_leapfile_enable'
     dest: /etc/periodic.conf
