@@ -56,8 +56,8 @@
 - name: http proxy
   replace:
     after: 'default:\\'
-    regexp: '^(?P<debut>\t:setenv=BLOCKSIZE=K)(,http_proxy=[^,:]+,https_proxy=[^,:]+)?(?P<reste>[^:]+)?:\\$'
-    replace: '\g<debut>,http_proxy={{ http_proxy | regex_replace(":","\\\\c") }},https_proxy={{ http_proxy | regex_replace(":","\\\\c") }}\g<reste>:\\'
+    regexp: '^(?P<debut>\t:setenv=BLOCKSIZE=K)((,[hH][tT][tT][pP][sS]?_[Pp][Rr][Oo][Xx][Yy]=[^,:]+)+)?(?P<reste>[^:]+)?:\\$'
+    replace: '\g<debut>,http_proxy={{ http_proxy | regex_replace(":","\\\\c") }},https_proxy={{ http_proxy | regex_replace(":","\\\\c") }},HTTP_PROXY={{ http_proxy | regex_replace(":","\\\\c") }},HTTPS_PROXY={{ http_proxy | regex_replace(":","\\\\c") }}\g<reste>:\\'
     dest: /etc/login.conf
   when: http_proxy | default(False)
 
