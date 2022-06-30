@@ -93,7 +93,7 @@
 # gits helper
 - name: gits
   include_tasks: gits.yml
-  when: gits | union(host_gits) | union(role_gits) | count() > 0 and do_sys
+  when: gits | union(host_gits) | union(role_gits) | union(group_gits) | count() > 0
   tags: gits
 
 # ntp
