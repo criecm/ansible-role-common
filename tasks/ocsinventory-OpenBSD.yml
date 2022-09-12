@@ -18,23 +18,24 @@
           - p5-Net-IP
           - p5-Proc-Daemon
           - p5-LWP-Protocol-https
+          - p5-Module-Install
           #- dmidecode
         state: present
     - name: get
       get_url:
-        url: 'https://github.com/OCSInventory-NG/UnixAgent/releases/download/2.3/Ocsinventory-Unix-Agent-2.3.tar.gz'
-        dest: /root/Ocsinventory-Unix-Agent-2.3.tar.gz
+        url: 'https://github.com/OCSInventory-NG/UnixAgent/releases/download/v2.9.3/Ocsinventory-Unix-Agent-2.9.3.tar.gz'
+        dest: /root/Ocsinventory-Unix-Agent-2.9.3.tar.gz
     - name: extract
       unarchive:
         remote_src: yes
         dest: /root
-        src: /root/Ocsinventory-Unix-Agent-2.3.tar.gz
+        src: /root/Ocsinventory-Unix-Agent-2.9.3.tar.gz
     - name: build
       shell: 'PERL_AUTOINSTALL=1 perl Makefile.PL && make && echo "n" | make install'
       args:
-        chdir: /root/Ocsinventory-Unix-Agent-2.3
+        chdir: /root/Ocsinventory-Unix-Agent-2.9.3
         creates: /usr/local/bin/ocsinventory-agent
-  when: not ocsinstalled.stat.exists
+  when: not ocsinstalled.stat.exists or do_upgrade | default(False)
 
 # config ocs
 - name: mkdir confdir
