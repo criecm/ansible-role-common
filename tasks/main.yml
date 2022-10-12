@@ -158,6 +158,7 @@
       copy:
         src: '{{ x509_ca_file }}'
         dest: /usr/share/ca-certificates/local/local.crt
+        mode: '0644'
       register: accopied
       when: ansible_os_family == "Debian"
     - name: ca-certificates.conf
@@ -169,7 +170,22 @@
     - name: update-ca-certificates
       command: '/usr/sbin/update-ca-certificates'
       when: certline.changed | default(False)
-  when: x509_ca_file and do_sys
+    - name: CA local (FreeBSD)
+      file:
+        dest: '/usr/local/etc/ssl/certs'
+        state: directory
+        mode: '0755'
+      when: ansible_os_family == "FreeBSD"
+    - name: register local CA (FreeBSD)
+      copy:
+        src: '{{ x509_ca_file }}'
+        dest: '/usr/local/etc/ssl/certs/local_ac.crt'
+        mode: '0644'
+      register: newcert
+    - name: certctl rehash
+      command: '/usr/sbin/certctl rehash'
+      when: newcert.changed | default(False)
+  when: x509_ca_file
   tags: x509
 
 # syslog
