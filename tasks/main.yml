@@ -179,9 +179,10 @@
     - name: register local CA (FreeBSD)
       copy:
         src: '{{ x509_ca_file }}'
-        dest: '/usr/local/etc/ssl/certs/local_ac.crt'
+        dest: '/usr/local/etc/ssl/certs/{{ x509_ca_file | regex_replace("^.*\/","") }}'
         mode: '0644'
       register: newcert
+      when: ansible_os_family == "FreeBSD"
     - name: certctl rehash
       command: '/usr/sbin/certctl rehash'
       when: newcert.changed | default(False)
