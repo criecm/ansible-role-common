@@ -118,7 +118,7 @@
 ### Mailrelay
   * `is_mailrelay` (False)
     Does not configure mail relay if True
-  * `mailrelay` ()
+  * `host_mailrelay` ()
     If defined, name/IP of the mail relay
 
 ### Ssh
