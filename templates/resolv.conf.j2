@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 domain {{ ansible_domain }}
 {% if search_domains | default(False) %}
-search{% for sd in search_domains %}{% if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ipaddr(sd.network) %} {{ sd.domain }}{% endif %}{% endfor %}
+search{% for sd in search_domains %}{% if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ansible.utils.ipaddr(sd.network) %} {{ sd.domain }}{% endif %}{% endfor %}
 
 {% endif %}
 {% if is_resolver | bool() %}nameserver 127.0.0.1
@@ -13,7 +13,7 @@ nameserver {{ ns }}
 {%   endfor %}
 {% else %}
 {%   for ns in resolvers %}
-{%     if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ipaddr(ns.network) %}
+{%     if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ansible.utils.ipaddr(ns.network) %}
 nameserver {{ ns.ip }}
 {%     endif %}
 {%   endfor %}

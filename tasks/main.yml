@@ -65,6 +65,13 @@
     path: '{{ etcprefix }}/etc/ansible/facts.d'
     state: directory
 
+- name: /etc/ansible link
+  file:
+    dest: '/etc/ansible'
+    src: '{{ etcprefix }}/etc/ansible'
+    state: link
+  when: etcprefix != ""
+
 # sshd config and keys
 - name: root ssh access and authorized_keys
   include_tasks: sshd.yml

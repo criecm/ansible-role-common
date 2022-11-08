@@ -28,4 +28,5 @@ galaxy_info:
     - sshd
     - authorizedkeys
 
-dependencies: []
+dependencies:
+  - ansible.utils
