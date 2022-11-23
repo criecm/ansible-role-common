@@ -129,3 +129,18 @@
       when: 'freebsd_allow_see_other | default(False)'
   tags: baseconf, security
   when: do_sys or do_ssi
+
+- name: stat /home
+  stat:
+    path: /home
+  register: stathome
+
+- name: real /home instead of link to /usr/home
+  block:
+    - name: rm /home
+      file:
+        path: /home
+        state: absent
+    - name: mv /usr/home /home
+      command: mv /usr/home /home
+  when: do_sys and stathome.stat.islnk and stathome.stat.lnk_target == "usr/home"
