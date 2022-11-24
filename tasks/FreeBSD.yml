@@ -143,4 +143,4 @@
         state: absent
     - name: mv /usr/home /home
       command: mv /usr/home /home
-  when: do_sys and stathome.stat.islnk and stathome.stat.lnk_target == "usr/home"
+  when: do_sys and stathome.stat.exists and stathome.stat.islnk and stathome.stat.lnk_target == "usr/home"
