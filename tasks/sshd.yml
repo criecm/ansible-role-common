@@ -23,10 +23,18 @@
     - '{{ backup_dir }}/ssh/ssh_host*_key.pub'
   when: 'backup_dir is exists'
 
+- name: disable ssh.socket
+  ansible.builtin.systemd:
+    name: ssh.socket
+    state: stopped
+    enabled: no
+  when: 'ansible_virtualization_role == "guest" and ansible_virtualization_type == "lxc"'
+
 - name: start sshd
   service:
     name: '{{ ssh_service_name | default("sshd") }}'
     state: started
+    enabled: yes
 
 - name: sshd_config
   lineinfile:
