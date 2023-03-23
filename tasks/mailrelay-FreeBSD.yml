@@ -1,26 +1,48 @@
 ---
 # mail via relay
 - name: mailrelay
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/mail/freebsd.submit.mc
     line: "FEATURE(`msp', `[{{ mailrelay }}]')"
     regexp: '^FEATURE\(.?msp'
   register: domailrelay
 
-- name:
+- name: reconfigure sendmail
   block:
     - name: stop sendmail
-      service:
+      ansible.builtin.service:
         name: sendmail
         state: stopped
 
+    - name: old configs
+      ansible.builtin.find:
+        paths: /etc/mail
+        patterns:
+          - '{{ ansible_hostname }}*.submit.mc'
+          - '{{ ansible_hostname }}*.submit.cf'
+      register: oldconfigs
+
+    - name: cleanup old configs
+      ansible.builtin.file:
+        path: '{{ item.path }}'
+        state: absent
+      loop: '{{ oldconfigs.files }}'
+      loop_control:
+        label: '{{ item.path }}'
+
     - name: config relay sendmail
-      command: /usr/bin/make install-submit-cf
+      ansible.builtin.command: /usr/bin/make install-submit-cf
+      args:
+        chdir: /etc/mail
+
+    - name: restart sendmail
+      ansible.builtin.command:
+        cmd: /usr/bin/make restart
       args:
         chdir: /etc/mail
 
     - name: no sendmail_submit
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/rc.conf
         line: 'sendmail_submit_enable="NO"'
         regexp: '^sendmail_submit_enable='
