@@ -103,6 +103,15 @@
   when: gits | union(host_gits) | union(role_gits) | union(group_gits) | count() > 0
   tags: gits
 
+# post-upgrade.sh script
+- name: post-upgrade.sh
+  copy:
+    dest: /root/post-upgrade.sh
+    content: |
+      #!/bin/sh
+    mode: '0755'
+    force: no
+
 # ntp
 - name: config ntpd
   include_tasks: ntpd.yml
