@@ -177,13 +177,13 @@
         mode: '0644'
       register: accopied
       when: ansible_os_family == "Debian"
-    - name: ca-certificates.conf
+    - name: ca-certificates.conf (debian)
       lineinfile:
         line: 'local/local.crt'
         regexp: '^local/local(ac)?.crt$'
         dest: /etc/ca-certificates.conf
-      when: accopied.changed | default(False)
       register: certline
+      when: ansible_os_family == "Debian"
     - name: update-ca-certificates
       command: '/usr/sbin/update-ca-certificates'
       when: certline.changed | default(False)
