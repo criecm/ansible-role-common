@@ -6,7 +6,7 @@
     regexp: '{{ item.regexp }}'
     dest: /etc/snmp/snmpd.conf
   with_items:
-    - { line: 'agentaddress  udp::161,udp6::161', regexp: '^agentaddress' }
+    - { line: 'agentaddress  udp::161,udp6:[::]:161', regexp: '^agentaddress' }
     - { line: 'sysLocation Epicerie', regexp: '^sysLocation' }
     - { line: 'sysContact CRI <c@ec-m.fr>', regexp: '^sysContact' }
   notify: restart snmpd
