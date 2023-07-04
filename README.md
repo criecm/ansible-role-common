@@ -10,7 +10,7 @@
 * syslog centralisé:
   * sauf si `is_syslogd=True`
   * seulement si `syslog_server` existe
-* deploiement des cles ssh `files/cles_ssh/*.pub`
+* deploiement des cles ssh `files/{{ ssh_keys_dir }}/*.pub`
 * /usr/local/admin/sysutils/common depuis GIT (et plus selon variables)
 * cron daily/weekly ecm (et supression des anciens de CVS)
 * snmpd (TODO: Debian et OpenBSD)
@@ -20,9 +20,11 @@
 ## templates and files
 
 ### sshd config and authorized keys
-
-  * Files matching `cles_ssh/*.pub` will be authorized on root account
-  * Files matching `cles_ssh/*.del` will be removed
+  
+  * `{{ ssh_keys_dir }}` can be a directory containing ssh keys to add (.pub) or delete (.del)
+     from root's authorized_keys
+  * Files matching `{{ ssh_keys_dir }}/*.pub` will be authorized on root account
+  * Files matching `{{ ssh_keys_dir }}/*.del` will be removed
   * vimrc file in files/ will be installed as /root/.vimrc
 
 ### ssh keys

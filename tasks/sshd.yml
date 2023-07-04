@@ -72,7 +72,8 @@
     key: "{{ lookup('file',item) }}"
     user: root
   with_fileglob:
-    - cles_ssh/*.pub
+    - '{{ ssh_keys_dir }}/*.pub'
+  when: ssh_keys_dir != ""
 
 - name: root de-authorized keys
   authorized_key:
@@ -80,4 +81,5 @@
     user: root
     state: absent
   with_fileglob:
-    - cles_ssh/*.del
+    - '{{ ssh_keys_dir }}/*.del'
+  when: ssh_keys_dir != ""
