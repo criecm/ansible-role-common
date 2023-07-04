@@ -135,12 +135,33 @@
     path: /home
   register: stathome
 
+- name: stat /usr/home
+  shell: "mount"
+  register: mounts
+
+- name: fact /usr/home
+  set_fact:
+    usrhomeiszfs: '{% if mounts.stdout is search("on /usr/home .*zfs") %}True{% else %}False{% endif %}'
+    usrhomemount: '{{ mounts.stdout_lines | select("search","on /usr/home ") | default([""]) | first | split(" ") | first | string }}'
+
+- debug:
+    var: usrhomemount
+  when: usrhomeiszfs
+
 - name: real /home instead of link to /usr/home
   block:
     - name: rm /home
       file:
         path: /home
         state: absent
+    - name: zfs rename /usr/home
+      block:
+        - name: zfs rename
+          command: 'zfs rename {{ usrhomemount }} {{ usrhomemount | regex_replace("/usr","") }}'
+        - name: zfs mountpoint
+          command: 'zfs set mountpoint=/home {{ usrhomemount | regex_replace("/usr","") }}'
+      when: usrhomeiszfs
     - name: mv /usr/home /home
       command: mv /usr/home /home
+      when: not usrhomeiszfs and usrhomemount == ""
   when: do_sys and stathome.stat.exists and stathome.stat.islnk and stathome.stat.lnk_target == "usr/home"
