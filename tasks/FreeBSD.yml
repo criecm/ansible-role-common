@@ -135,21 +135,16 @@
     path: /home
   register: stathome
 
-- name: stat /usr/home
+- name: get mounts
   shell: "mount"
   register: mounts
 
-- name: fact /usr/home
-  set_fact:
-    usrhomeiszfs: '{% if mounts.stdout is search("on /usr/home .*zfs") %}True{% else %}False{% endif %}'
-    usrhomemount: '{{ mounts.stdout_lines | select("search","on /usr/home ") | default([""]) | first | split(" ") | first | string }}'
-
-- debug:
-    var: usrhomemount
-  when: usrhomeiszfs
-
 - name: real /home instead of link to /usr/home
   block:
+    - name: fact /usr/home
+      set_fact:
+        usrhomeiszfs: '{% if mounts.stdout is search("on /usr/home .*zfs") %}True{% else %}False{% endif %}'
+        usrhomemount: '{{ mounts.stdout_lines | select("search","on /usr/home ") | default([""]) | first | split(" ") | first | string }}'
     - name: rm /home
       file:
         path: /home
@@ -160,7 +155,7 @@
           command: 'zfs rename {{ usrhomemount }} {{ usrhomemount | regex_replace("/usr","") }}'
         - name: zfs mountpoint
           command: 'zfs set mountpoint=/home {{ usrhomemount | regex_replace("/usr","") }}'
-      when: usrhomeiszfs
+      when: usrhomeiszfs and usrhomemount != ""
     - name: mv /usr/home /home
       command: mv /usr/home /home
       when: not usrhomeiszfs and usrhomemount == ""
