@@ -203,7 +203,7 @@
     - name: certctl rehash
       command: '/usr/sbin/certctl rehash'
       when: newcert.changed | default(False)
-  when: x509_ca_file
+  when: x509_ca_file | default(False) | bool
   tags: x509
 
 # syslog
