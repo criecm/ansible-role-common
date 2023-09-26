@@ -1,4 +1,11 @@
 ---
+- name: syslog directory
+  file:
+    path: /etc/rsyslog.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0600'
 - name: syslog central
   template:
     src: rsyslog_ecm.conf.j2
