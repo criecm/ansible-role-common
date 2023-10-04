@@ -138,6 +138,7 @@
 - name: get mounts
   shell: "mount"
   register: mounts
+  changed_when: False
 
 - name: real /home instead of link to /usr/home
   block:
