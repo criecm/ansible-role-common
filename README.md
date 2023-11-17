@@ -37,8 +37,13 @@
   * `host_timezone` (Europe/Paris)
   * `is_resolver` (False)
     if True, will use 127.0.0.1 in resolv.conf first
-  * `resolvers` ( [{ network='0.0.0.0/0', ip='8.8.8.8' }] )
+  * `resolvers ( [] )`
     list of dicts, ip will be used if host match network (in listed order)
+    eg: `[{network='192.0.2.0/24',ip='192.0.2.53'},{network='2001:DB8::/32',ip='2001:DB8::53'}]`
+  * `default_resolver_ipv4 ( ['208.67.222.222','8.8.4.4'] )`
+    will be user if no match is found in `resolvers` and jail has IPv4
+  * `default_resolver_ipv6 ( ['2620:119:35::35','2001:4860:4860::8844'] )`
+    will be user if no match is found in `resolvers` and jail has IPv6
   * `dns64_resolvers ([])`
     for IP6-only hosts, overrides `resolvers` mechanism with DNS64-enabled resolvers
   * `rootmailto` ()

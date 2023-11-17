@@ -80,11 +80,20 @@ pkg_repo_conf: ''
 # nameserver
 #  network: restrict host ip ('0.0.0.0/0'=all)
 #  ip: nameserver
-resolvers:
-  - { network: '0.0.0.0/0', ip: "8.8.8.8" }
+resolvers: []
+#  - { network: '0.0.0.0/0', ip: "8.8.8.8" }
 #  - { network: '^10\.3\.0\.', ip: "10.3.0.52" }
 #  - { network: '^2001:660:5404:', ip: "2001:660:5404:b0b::53" }
 #  - { network: '^10\.3\.0\.', ip: "147.94.19.254" }
+
+# will use default_resolver_ipv4 if no match in resolvers and ipv4 addr defined
+default_resolver_ipv4:
+  - '208.67.222.222'
+  - '8.8.4.4'
+# will use default_resolver_ipv6 if no match in resolvers and ipv6 addr defined
+default_resolver_ipv6:
+  - '2620:119:35::35'
+  - '2001:4860:4860::8844'
 
 # for IPv6-only hosts
 dns64_resolvers: []

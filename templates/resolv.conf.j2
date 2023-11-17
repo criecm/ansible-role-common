@@ -4,19 +4,39 @@ domain {{ ansible_domain }}
 search{% for sd in search_domains %}{% if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ansible.utils.ipaddr(sd.network) %} {{ sd.domain }}{% endif %}{% endfor %}
 
 {% endif %}
-{% if is_resolver | bool() %}nameserver 127.0.0.1
+{% set my_ns = [] %}
+{% if is_resolver | bool() %}
+nameserver 127.0.0.1
+{% set _ = my_ns.append("127.0.0.1") %}
 {% endif %}
 {% if ansible_all_ipv4_addresses | count == 0 and ansible_all_ipv6_addresses | count >= 1 and dns64_resolvers | count >= 1 %}
 # DNS64 resolver(s)
 {%   for ns in dns64_resolvers %}
 nameserver {{ ns }}
+{% set _ = my_ns.append(ns) %}
 {%   endfor %}
 {% else %}
 {%   for ns in resolvers %}
 {%     if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ansible.utils.ipaddr(ns.network) %}
 nameserver {{ ns.ip }}
+{% set _ = my_ns.append(ns.ip) %}
 {%     endif %}
 {%   endfor %}
+{% endif %}
+{% if my_ns | count == 0 %}
+# default resolvers
+{%   if ansible_all_ipv4_addresses | count >= 1 %}
+# ansible default_resolver_ipv4
+{%     for ns in default_resolver_ipv4 %}
+nameserver {{ ns }}
+{%     endfor %}
+{%   endif %}
+{%   if ansible_all_ipv6_addresses | count >= 1 %}
+# ansible default_resolver_ipv6
+{%     for ns in default_resolver_ipv6 %}
+nameserver {{ ns }}
+{%     endfor %}
+{%   endif %}
 {% endif %}
 
 {% if ansible_os_family == "FreeBSD" or ansible_os_family == "Debian" %}
