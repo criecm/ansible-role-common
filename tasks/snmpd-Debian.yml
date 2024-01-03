@@ -3,19 +3,20 @@
 - name: snmpd config file
   lineinfile:
     line: '{{ item.line }}'
-    regexp: '{{ item.regexp }}'
+    regexp: '^{{ item.regexp }}'
     dest: /etc/snmp/snmpd.conf
   with_items:
-    - { line: 'agentAddress  udp::161,udp6:[::]:161', regexp: '^agentAddress' }
-    - { line: 'sysLocation Epicerie', regexp: '^sysLocation' }
-    - { line: 'sysContact CRI <c@ec-m.fr>', regexp: '^sysContact' }
+    - { line: 'agentaddress udp::161,udp6:[::]:161', regexp: 'agent[Aa]ddress' }
+    - { line: 'sysLocation Epicerie', regexp: 'sysLocation' }
+    - { line: 'sysContact CRI <c@ec-m.fr>', regexp: 'sysContact' }
   notify: restart snmpd
 - name: snmpd config file - access perms
   lineinfile:
     line: 'rocommunity public {{ item }}'
-    dest: /etc/snmp/snmpd.conf
+    dest: /etc/snmp/snmpd.conf.d/access.conf
     insertbefore: 'rocommunity .* -V systemonly'
     regexp: '^ *rocommunity *public *{{ item }}'
+    create: yes
   loop: '{{ [ "127.0.0.1" ] + monitoring_from + admin_from | default([]) | unique }}'
   when: item is not search(":")
   notify: restart snmpd
@@ -23,9 +24,10 @@
 - name: snmpd config file - access IPv6 perms
   lineinfile:
     line: 'rocommunity6 public {{ item }}'
-    dest: /etc/snmp/snmpd.conf
+    dest: /etc/snmp/snmpd.conf.d/access.conf
     insertbefore: 'rocommunity .* -V systemonly'
     regexp: '^ *rocommunity6 *public *{{ item }}'
+    create: yes
   loop: '{{ [ "::1" ] + monitoring_from + admin_from | default([]) | unique }}'
   when: item is search(":")
   notify: restart snmpd
@@ -33,7 +35,8 @@
 - name: snmpd config file - hardware monitoring
   lineinfile:
     line: '{{ item }}'
-    dest: /etc/snmp/snmpd.conf
+    dest: /etc/snmp/snmpd.conf.d/local.conf
+    create: yes
   loop:
     - proc  mountd
     - proc  ntalkd    4
