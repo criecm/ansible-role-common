@@ -80,7 +80,7 @@
     line: 'includeDir /etc/snmp/snmpd.conf.d'
     regexp: '^ *includeDir'
   notify: restart snmpd
-  when: ansible_distribution_major_version > 11
+  when: ansible_distribution_major_version | int > 11
 
 - name: enable snmpd
   service:
