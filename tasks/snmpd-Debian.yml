@@ -52,7 +52,6 @@
     regexp: '^ *{{ item }} *.*$'
     state: absent
   when: snmpd_local_config is not match("/etc/snmp/snmpd.conf")
-  notify: restart snmpd
   loop:
     - proc
     - disk
