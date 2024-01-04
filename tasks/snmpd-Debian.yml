@@ -11,11 +11,18 @@
     - { line: 'sysContact CRI <c@ec-m.fr>', regexp: 'sysContact' }
   notify: restart snmpd
 
-- name: "delete rocommunity[6]"
+- name: "delete rocommunity[6] -V systemonly"
   lineinfile:
     regexp: '^rocommunity.* -V systemonly'
     state: absent
     dest: /etc/snmp/snmpd.conf
+  notify: restart snmpd
+
+- name: cleanup snmpd.conf
+  lineinfile:
+    regexp: '^ *rocommunity'
+    state: absent
+  when: snmpd_access_config is not match("/etc/snmp/snmpd.conf")
   notify: restart snmpd
 
 - name: snmpd config file - access perms
@@ -40,6 +47,19 @@
   when: item is search(":")
   notify: restart snmpd
 
+- name: cleanup snmpd.conf
+  lineinfile:
+    regexp: '^ *{{ item }} *.*$'
+    state: absent
+  when: snmpd_local_config is not match("/etc/snmp/snmpd.conf")
+  notify: restart snmpd
+  loop:
+    - proc
+    - disk
+    - includeAllDisks
+    - load
+  notify: restart snmpd
+
 - name: snmpd config file - hardware monitoring
   lineinfile:
     line: '{{ item }}'
@@ -53,6 +73,15 @@
     - includeAllDisks  10%
     - load   12 10 5
   notify: restart snmpd
+
+- name: includeDir
+  lineinfile:
+    dest: /etc/snmp/snmpd.conf
+    line: 'includeDir /etc/snmp/snmpd.conf.d'
+    regexp: '^ *includeDir'
+  notify: restart snmpd
+  when: ansible_distribution_major_version > 11
+
 - name: enable snmpd
   service:
     name: snmpd
