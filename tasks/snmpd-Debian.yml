@@ -10,10 +10,18 @@
     - { line: 'sysLocation Epicerie', regexp: 'sysLocation' }
     - { line: 'sysContact CRI <c@ec-m.fr>', regexp: 'sysContact' }
   notify: restart snmpd
+
+- name: "delete rocommunity[6]"
+  lineinfile:
+    regexp: '^rocommunity.* -V systemonly'
+    state: absent
+    dest: /etc/snmp/snmpd.conf
+  notify: restart snmpd
+
 - name: snmpd config file - access perms
   lineinfile:
     line: 'rocommunity public {{ item }}'
-    dest: /etc/snmp/snmpd.conf.d/access.conf
+    dest: '{{ snmpd_access_config }}'
     insertbefore: 'rocommunity .* -V systemonly'
     regexp: '^ *rocommunity *public *{{ item }}'
     create: yes
@@ -24,7 +32,7 @@
 - name: snmpd config file - access IPv6 perms
   lineinfile:
     line: 'rocommunity6 public {{ item }}'
-    dest: /etc/snmp/snmpd.conf.d/access.conf
+    dest: '{{ snmpd_access_config }}'
     insertbefore: 'rocommunity .* -V systemonly'
     regexp: '^ *rocommunity6 *public *{{ item }}'
     create: yes
@@ -35,7 +43,7 @@
 - name: snmpd config file - hardware monitoring
   lineinfile:
     line: '{{ item }}'
-    dest: /etc/snmp/snmpd.conf.d/local.conf
+    dest: '{{ snmpd_local_config }}'
     create: yes
   loop:
     - proc  mountd

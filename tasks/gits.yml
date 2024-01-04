@@ -37,3 +37,4 @@
     - '{{ group_gits }}'
     - '{{ role_gits }}'
   when: git_ssh_key | length > 0
+  tags: [ gits ]
