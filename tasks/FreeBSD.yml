@@ -145,7 +145,7 @@
     - name: fact /usr/home
       set_fact:
         usrhomeiszfs: '{% if mounts.stdout is search("on /usr/home .*zfs") %}True{% else %}False{% endif %}'
-        usrhomemount: '{{ mounts.stdout_lines | select("search","on /usr/home ") | default([""]) | first | split(" ") | first | string }}'
+        usrhomemount: '{% if mounts.stdout is search("on /usr/home .*") %}{{ mounts.stdout_lines | select("search","on /usr/home ") | default([""]) | first | split(" ") | first | string }}{% else %}{% endif %}'
     - name: rm /home
       file:
         path: /home
