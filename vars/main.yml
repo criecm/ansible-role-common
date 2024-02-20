@@ -1,3 +1,5 @@
 ---
 rels: '{% for relay in mailrelays %}{% if ansible_all_ipv4_addresses | ansible.utils.ipaddr(relay.network) %}{{ relay.relay }},{% endif %}{% endfor %}'
 mailrelay: '{% if host_mailrelay == "" %}{{ rels | regex_replace(",.*","") }}{% else %}{{ host_mailrelay }}{% endif %}'
+has_ipv6: '{% if ansible_all_ipv6_addresses | ansible.utils.ipaddr("2000::/3") | count() > 0 %}True{% else %}False{% endif %}'
+has_ipv6_only: '{% if ansible_all_ipv6_addresses | ansible.utils.ipaddr("2000::/3") | count() > 0 and ansible_all_ipv4_addresses | count == 0 %}True{% else %}False{% endif %}'
