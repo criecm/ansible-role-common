@@ -1,4 +1,8 @@
 ---
+- name: rsyslog installed
+  package:
+    name: rsyslog
+    state: present
 - name: syslog directory
   file:
     path: /etc/rsyslog.d
