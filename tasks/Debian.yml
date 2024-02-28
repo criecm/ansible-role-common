@@ -21,7 +21,9 @@
     check_mode: False
     ignore_errors: True
   - name: set timezone
-    command: 'echo {{ host_timezone }} > /etc/timezone'
+    copy:
+      dest: /etc/timezone
+      content: '{{ host_timezone }}'
     when: zoneinfo.stdout != host_timezone
   tags: timezone
   when: do_sys
