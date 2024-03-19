@@ -26,10 +26,9 @@
         url: 'https://github.com/OCSInventory-NG/UnixAgent/releases/download/v2.9.3/Ocsinventory-Unix-Agent-2.9.3.tar.gz'
         dest: /root/Ocsinventory-Unix-Agent-2.9.3.tar.gz
     - name: extract
-      unarchive:
-        remote_src: yes
-        dest: /root
-        src: /root/Ocsinventory-Unix-Agent-2.9.3.tar.gz
+      command: 'tar xzf /root/Ocsinventory-Unix-Agent-2.9.3.tar.gz'
+      args:
+        chdir: '/root'
     - name: build
       shell: 'PERL_AUTOINSTALL=1 perl Makefile.PL && make && echo "n" | make install'
       args:
