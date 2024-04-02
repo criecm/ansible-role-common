@@ -4,3 +4,7 @@ smartd_service: smartmontools
 ssh_service_name: ssh
 snmpd_access_config: '{% if ansible_distribution_major_version | int > 11 %}/etc/snmp/snmpd.conf.d/access.conf{% else %}/etc/snmp/snmpd.conf{% endif %}'
 snmpd_local_config: '{% if ansible_distribution_major_version | int > 11 %}/etc/snmp/snmpd.conf.d/local.conf{% else %}/etc/snmp/snmpd.conf{% endif %}'
+resolver_options:
+  - edns0
+  - timeout:2
+  - trust-ad

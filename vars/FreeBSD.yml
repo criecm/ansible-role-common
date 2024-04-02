@@ -6,3 +6,6 @@ prefix: /usr/local
 ntp_service: ntpd
 ntp_leapfile: /var/db/ntpd.leap-seconds.list
 smartd_service: smartd
+resolver_options:
+  - edns0
+  - timeout:2

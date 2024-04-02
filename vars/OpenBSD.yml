@@ -5,3 +5,7 @@ prefix: /usr/local
 ntp_service: ntpd
 ntp_config: ntpd.conf
 smartd_service: smartd
+resolver_options:
+  - edns0
+  - timeout:2
+  - trust-ad

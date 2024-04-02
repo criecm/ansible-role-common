@@ -39,7 +39,4 @@ nameserver {{ ns }}
 {%   endif %}
 {% endif %}
 
-{% if ansible_os_family == "FreeBSD" or ansible_os_family == "Debian" %}
-# reduit le timeout a 2s avant de passer au suivant
-options timeout:2
-{% endif %}
+options edns0{% if ansible_os_family == "FreeBSD" or ansible_os_family == "Debian" %} timeout:2{% endif %}{% if ansible_os_family == "OpenBSD" or ansible_os_family == "Debian" %} trust-ad{% endif %}

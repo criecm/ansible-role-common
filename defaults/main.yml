@@ -95,6 +95,9 @@ default_resolver_ipv6:
   - '2620:119:35::35'
   - '2001:4860:4860::8844'
 
+resolver_options:
+  - edns0
+
 # for IPv6-only hosts
 dns64_resolvers: []
 
