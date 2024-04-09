@@ -224,6 +224,19 @@
   when: ldap_base | length > 0 and ldap_uri | length > 0 and x509_ca_path | length > 0 and do_sys
   tags: ldap
 
+# cron vars
+- name: cron vars
+  cron:
+    name: '{{ cronvar.key }}'
+    value: '{{ cronvar.value }}'
+    env: True
+    user: root
+  tags: crons
+  when: cronvars
+  with_dict: '{{ cronvars }}'
+  loop_control:
+    loop_var: cronvar
+
 # crons
 - name: crons
   cron:

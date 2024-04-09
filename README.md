@@ -64,6 +64,8 @@
       * `version` (master)
   * `crons`,`host_crons`,`role_crons`:
     list of dicts for cron module
+  * `cronvars ({})`
+    dict of crontab(5) variables
   * `ocsinventory_server` ('')
     If present, install and configure openinventory-agent
   * `root_shell` (zsh)
