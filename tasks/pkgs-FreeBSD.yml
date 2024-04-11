@@ -24,7 +24,7 @@
     IGNORE_OSVERSION: yes
 
 - name: upgrade pkgs
-  command: 'pkg upgrade -y'
+  command: 'pkg upgrade -fy'
   when: do_upgrade | default(False)
 
 # packages standard
