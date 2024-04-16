@@ -8,6 +8,11 @@
   command: 'dpkg-reconfigure --frontend noninteractive postfix'
   when: ansible_distribution == 'Debian'
 
+- name: reload postfix
+  service:
+    name: postfix
+    state: reloaded
+
 - name: restart smtpd
   service:
     name: smtpd
