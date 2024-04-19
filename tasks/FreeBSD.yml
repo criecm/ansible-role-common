@@ -105,7 +105,7 @@
       command: 'kldload mfip'
       ignore_errors: True
       when: has_mfi.stdout_lines | count() > 0 and loadrc.changed
-  when: do_sys
+  when: do_sys and not is_vm
 
 - name: hardening freebsd
   block:

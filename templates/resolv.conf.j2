@@ -1,25 +1,29 @@
 # {{ ansible_managed }}
 domain {{ ansible_domain }}
+{% set my_domains = [] %}
 {% if search_domains | default(False) %}
-search{% for sd in search_domains %}{% if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ansible.utils.ipaddr(sd.network) %} {{ sd.domain }}{% endif %}{% endfor %}
-
+{%   for sd in search_domains %}
+{%    if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ansible.utils.ipaddr(sd.network) %}
+{%      set _ = my_domains.append(sd.domain) %}
+{%    endif %}
+{%   endfor %}
+search {{ my_domains | unique | join(" ") }}
 {% endif %}
 {% set my_ns = [] %}
 {% if is_resolver | bool() %}
 nameserver 127.0.0.1
 {% set _ = my_ns.append("127.0.0.1") %}
 {% endif %}
-{% if ansible_all_ipv4_addresses | count == 0 and ansible_all_ipv6_addresses | count >= 1 and dns64_resolvers | count >= 1 %}
+{% if ansible_all_ipv4_addresses | count == 0 and ansible_all_ipv6_addresses | reject("search","%") | count >= 1 and dns64_resolvers | count >= 1 %}
 # DNS64 resolver(s)
 {%   for ns in dns64_resolvers %}
-nameserver {{ ns }}
-{% set _ = my_ns.append(ns) %}
+{%     set _ = my_ns.append(ns) %}
 {%   endfor %}
 {% else %}
+# computed resolvers(s)
 {%   for ns in resolvers %}
 {%     if ansible_all_ipv4_addresses | union(ansible_all_ipv6_addresses) | ansible.utils.ipaddr(ns.network) %}
-nameserver {{ ns.ip }}
-{% set _ = my_ns.append(ns.ip) %}
+{%       set _ = my_ns.append(ns.ip) %}
 {%     endif %}
 {%   endfor %}
 {% endif %}
@@ -28,15 +32,18 @@ nameserver {{ ns.ip }}
 {%   if ansible_all_ipv4_addresses | count >= 1 %}
 # ansible default_resolver_ipv4
 {%     for ns in default_resolver_ipv4 %}
-nameserver {{ ns }}
+{%       set _ = my_ns.append(ns) %}
 {%     endfor %}
 {%   endif %}
 {%   if ansible_all_ipv6_addresses | count >= 1 %}
 # ansible default_resolver_ipv6
 {%     for ns in default_resolver_ipv6 %}
-nameserver {{ ns }}
+{%       set _ = my_ns.append(ns) %}
 {%     endfor %}
 {%   endif %}
 {% endif %}
+{% for ns in my_ns %}
+nameserver {{ ns }}
+{% endfor %}
 
 options edns0{% if ansible_os_family == "FreeBSD" or ansible_os_family == "Debian" %} timeout:2{% endif %}{% if ansible_os_family == "OpenBSD" or ansible_os_family == "Debian" %} trust-ad{% endif %}
