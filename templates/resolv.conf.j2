@@ -42,7 +42,7 @@ nameserver 127.0.0.1
 {%     endfor %}
 {%   endif %}
 {% endif %}
-{% for ns in my_ns %}
+{% for ns in my_ns | unique %}
 nameserver {{ ns }}
 {% endfor %}
 
