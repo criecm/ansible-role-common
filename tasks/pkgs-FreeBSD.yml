@@ -21,7 +21,7 @@
   changed_when: False
   check_mode: False
   environment:
-    IGNORE_OSVERSION: yes
+    IGNORE_OSVERSION: 'yes'
 
 - name: upgrade pkgs
   command: 'pkg upgrade -fy'
