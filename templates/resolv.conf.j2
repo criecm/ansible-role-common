@@ -11,7 +11,7 @@ search {{ my_domains | unique | join(" ") }}
 {% endif %}
 {% set my_ns = [] %}
 {% if is_resolver | bool() %}
-nameserver 127.0.0.1
+# is_resolver is True
 {% set _ = my_ns.append("127.0.0.1") %}
 {% endif %}
 {% if ansible_all_ipv4_addresses | count == 0 and ansible_all_ipv6_addresses | reject("search","%") | count >= 1 and dns64_resolvers | count >= 1 %}
