@@ -8,7 +8,7 @@ do_sys: False
 # if False, disable security-related too
 do_ssi: True
 
-common_version: 4
+common_version: 5
 
 # write resolv.conf
 do_resolvconf: True
