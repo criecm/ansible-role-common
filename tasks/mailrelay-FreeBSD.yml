@@ -1,4 +1,39 @@
 ---
+# dma
+- name: check dma
+  stat:
+    path: /etc/dma/dma.conf
+  register: statdmaconf
+
+- name: use dma
+  block:
+    - name: relayhost
+      ansible.builtin.lineinfile:
+        dest: /etc/dma/dma.conf
+        line: '{{ item.key }} {{ item.value }}'
+        insertafter: '^#{{ item.key }}'
+      with_dict:
+        SMARTHOST: '{{ mailrelay }}'
+    - name: configure mailer.conf
+      copy:
+        dest: /etc/mail/mailer.conf
+        src: /usr/share/examples/dma/mailer.conf
+        remote_src: True
+      notify: newaliases
+    - name: get sendmail default
+      command: 'sysrc -n sendmail_enable'
+      check_mode: False
+      changed_when: False
+      register: sendmail_enabled
+    - name: disable sendmail
+      command: 'sysrc sendmail_enable="NONE"'
+      when: sendmail_enabled.stdout is not match("NONE")
+    - name: register has_dma
+      set_fact:
+        has_dma: True
+        cacheable: True
+  when: statdmaconf.stat.exists
+
 # mail via relay
 - name: mailrelay
   ansible.builtin.lineinfile:
@@ -6,6 +41,7 @@
     line: "FEATURE(`msp', `[{{ mailrelay }}]')"
     regexp: '^FEATURE\(.?msp'
   register: domailrelay
+  when: not has_dma | default(False)
 
 - name: reconfigure sendmail
   block:
@@ -46,4 +82,4 @@
         dest: /etc/rc.conf
         line: 'sendmail_submit_enable="NO"'
         regexp: '^sendmail_submit_enable='
-  when: domailrelay.changed
+  when: not has_dma | default(False) and domailrelay.changed
