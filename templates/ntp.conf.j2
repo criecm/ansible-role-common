@@ -1,3 +1,4 @@
+tos minclock 2 maxclock 6
 {% for srv in ntp_servers %}
 server {{ srv }} iburst
 {% endfor %}
@@ -5,9 +6,8 @@ server {{ srv }} iburst
 pool {{ pool }}
 {% endfor %}
 
-restrict -4 default kod notrap nomodify nopeer noquery limited
-restrict -6 default kod notrap nomodify nopeer noquery limited
-restrict source notrap nomodify noquery
+restrict default limited kod nomodify notrap noquery nopeer
+restrict limited kod nomodify notrap noquery
 restrict 127.0.0.1
 restrict ::1
 {% if ntp_leapfile %}
