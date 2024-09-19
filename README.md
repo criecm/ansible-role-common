@@ -102,6 +102,8 @@
 
   * `debian_base_pkgs (git,rsync,vim,root_shell])`
     list of packages to install
+  * `debian_locales (fr_FR.UTF-8,en_US.UTF-8)`
+    list of locales to enable
 
 ### Packages
 

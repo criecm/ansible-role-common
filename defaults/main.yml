@@ -217,3 +217,7 @@ common_freebsd_sysctls:
   - { regexp: '^security.bsd.see_other_uids=', line: 'security.bsd.see_other_uids=0' }
 
 ssh_keys_dir: ''
+
+debian_locales:
+  - en_US.UTF-8 UTF-8
+  - fr_FR.UTF-8 UTF-8
