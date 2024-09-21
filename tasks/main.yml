@@ -115,7 +115,7 @@
 # ntp
 - name: config ntpd
   include_tasks: ntpd.yml
-  when: ( ntp_servers or ntp_pools ) and not is_jail and not is_vm and do_sys
+  when: ( ntp_servers or ntp_pools ) and not is_jail and do_sys
   tags: ntp
 
 # smartd
