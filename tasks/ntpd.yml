@@ -1,9 +1,63 @@
 ---
-- name: config ntpd
-  template:
-    src: '{{ ntp_config }}.j2'
-    dest: '/etc/{{ ntp_config }}'
-    mode: '0644'
+- name: get ntp servers
+  command: "awk '/^server/{print $2}' /etc/{{ ntp_config }}"
+  register: already_ntp_servers
+  changed_when: False
+  check_mode: False
+
+- name: get ntp pools
+  command: "awk '/^pool/{print $2}' /etc/{{ ntp_config }}"
+  register: already_ntp_pools
+  changed_when: False
+  check_mode: False
+
+- name: set pool name
+  set_fact:
+    poolname: '{% if ansible_os_family == "OpenBSD" %}servers{% else %}pool{% endif %}'
+    iburst: '{% if ansible_os_family == "OpenBSD" %}{% else %} iburst{% endif %}'
+
+- name: remove ntp server {{ ntpserver }}
+  lineinfile:
+    path: '/etc/{{ ntp_config }}'
+    regexp: '^server +{{ ntpserver }}.*'
+    state: absent
+  loop: '{{ already_ntp_servers.stdout_lines }}'
+  loop_control:
+    loop_var: ntpserver
+  when: not ntpserver in ntp_servers
+  notify: restart ntpd
+
+- name: add ntp server {{ ntpserver }}
+  lineinfile:
+    path: '/etc/{{ ntp_config }}'
+    line: 'server {{ ntpserver }}{{ iburst }}'
+    regexp: '^server +{{ ntpserver }}.*'
+    state: present
+  loop: '{{ ntp_servers }}'
+  loop_control:
+    loop_var: ntpserver
+  notify: restart ntpd
+
+- name: remove ntp pool {{ ntppool }}
+  lineinfile:
+    path: '/etc/{{ ntp_config }}'
+    regexp: '^{{ poolname }} +{{ ntppool }}.*'
+    state: absent
+  loop: '{{ already_ntp_pools.stdout_lines }}'
+  loop_control:
+    loop_var: ntppool
+  when: not ntppool in ntp_pools
+  notify: restart ntpd
+
+- name: add ntp pool {{ ntppool }}
+  lineinfile:
+    path: '/etc/{{ ntp_config }}'
+    line: '{{ poolname }} {{ ntppool }}{{ iburst }}'
+    regexp: '^pool +{{ ntppool }}.*'
+    state: present
+  loop: '{{ ntp_pools }}'
+  loop_control:
+    loop_var: ntppool
   notify: restart ntpd
 
 - name: enable ntpd
